@@ -1,0 +1,78 @@
+#mission-voice {
+  position: fixed;
+  left: 50%;
+  bottom: 105px;
+
+  transform:
+    translateX(-50%)
+    translateY(20px);
+
+  width: min(760px, calc(100vw - 40px));
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
+  z-index: 1000;
+}
+
+#mission-voice.visible {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+.mission-voice-box {
+  background: rgba(5, 10, 16, 0.92);
+
+  border-left: 3px solid #42e8ff;
+
+  padding: 14px 18px;
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.45),
+    inset 0 0 20px rgba(66, 232, 255, 0.04);
+
+  backdrop-filter: blur(12px);
+}
+
+.mission-voice-speaker {
+  color: #42e8ff;
+
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  margin-bottom: 5px;
+}
+
+.mission-voice-text {
+  color: white;
+
+  font-size: 16px;
+  line-height: 1.4;
+
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  #mission-voice {
+    bottom: 145px;
+    width: calc(100vw - 24px);
+  }
+
+  .mission-voice-box {
+    padding: 11px 14px;
+  }
+
+  .mission-voice-text {
+    font-size: 14px;
+  }
+}
