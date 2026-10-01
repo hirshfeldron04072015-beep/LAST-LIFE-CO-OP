@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+
+  <title>LAST LINE</title>
+
+  <link rel="stylesheet" href="./styles/game.css" />
+</head>
+
+<body>
+  <div id="menu">
+    <div class="menu-card">
+      <div class="logo">LAST LINE</div>
+      <div class="subtitle">TACTICAL CO-OP OPERATIONS</div>
+
+      <input id="callsign" placeholder="CALLSIGN" maxlength="16" />
+
+      <select id="mission-select">
+        <option value="tdm">TEAM DEATHMATCH</option>
+        <option value="hostage">HOSTAGE RESCUE</option>
+        <option value="hvt">HIGH VALUE TARGET</option>
+        <option value="survival">SURVIVAL</option>
+      </select>
+
+      <button id="deploy">DEPLOY</button>
+
+      <div id="menu-status"></div>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div>
+        <b>LAST LINE</b>
+        <span id="mission-name"></span>
+      </div>
+
+      <div id="objective"></div>
+    </div>
+
+    <div id="kill-feed"></div>
+
+    <div id="crosshair">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div id="damage"></div>
+
+    <div id="weapon-hud">
+      <div id="weapon-name">VANGUARD AR</div>
+      <div>
+        <span id="ammo">30</span>
+        <span class="slash">/</span>
+        <span id="reserve">120</span>
+      </div>
+    </div>
+
+    <div id="health-hud">
+      <div class="health-label">HP</div>
+      <div class="health-bar">
+        <div id="health-fill"></div>
+      </div>
+      <div id="health-number">100</div>
+    </div>
+
+    <div id="mission-voice">
+      <div class="mission-voice-box">
+        <div id="mission-speaker">COMMAND</div>
+        <div id="mission-text"></div>
+      </div>
+    </div>
+
+    <div id="mobile-controls">
+      <button id="mobile-fire">FIRE</button>
+      <button id="mobile-reload">RELOAD</button>
+      <button id="mobile-switch">SWITCH</button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
