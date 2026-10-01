@@ -1,4 +1,10 @@
-import * as THREE from
+import { ObjectiveSystem } from "./game/ObjectiveSystem.js";
+import { Extraction } from "./game/Extraction.js";
+import { EnemySpawner } from "./game/EnemySpawner.js";
+import { HitEffects } from "./game/HitEffects.js";
+import { SaveSystem } from "./systems/SaveSystem.js";
+import { Statistics } from "./systems/Statistics.js";
+import { MissionResult } from "./ui/MissionResult.js";import * as THREE from
   "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 import { PointerLockControls } from
