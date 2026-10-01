@@ -1,10 +1,4 @@
-import { ObjectiveSystem } from "./game/ObjectiveSystem.js";
-import { Extraction } from "./game/Extraction.js";
-import { EnemySpawner } from "./game/EnemySpawner.js";
-import { HitEffects } from "./game/HitEffects.js";
-import { SaveSystem } from "./systems/SaveSystem.js";
-import { Statistics } from "./systems/Statistics.js";
-import { MissionResult } from "./ui/MissionResult.js";import * as THREE from
+import * as THREE from
   "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
 import { PointerLockControls } from
@@ -47,18 +41,41 @@ import {
   MissionVoice
 } from "./game/MissionVoice.js";
 
+import {
+  ObjectiveSystem
+} from "./game/ObjectiveSystem.js";
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
+import {
+  Extraction
+} from "./game/Extraction.js";
 
-const $ = id =>
-  document.getElementById(id);
+import {
+  EnemySpawner
+} from "./game/EnemySpawner.js";
+
+import {
+  HitEffects
+} from "./game/HitEffects.js";
+
+import {
+  SaveSystem
+} from "./systems/SaveSystem.js";
+
+import {
+  Statistics
+} from "./systems/Statistics.js";
+
+import {
+  MissionResult
+} from "./ui/MissionResult.js";
 
 
 /* =========================================================
    DOM
    ========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
 
 const menu =
   $("menu");
@@ -77,7 +94,7 @@ const callsignInput =
 
 
 /* =========================================================
-   RENDERER
+   THREE.JS
    ========================================================= */
 
 const scene =
@@ -145,17 +162,13 @@ document.body.prepend(
    LIGHTING
    ========================================================= */
 
-const hemisphere =
+scene.add(
   new THREE.HemisphereLight(
     0xbad7e5,
     0x101820,
     1.5
-  );
-
-scene.add(
-  hemisphere
+  )
 );
-
 
 const sun =
   new THREE.DirectionalLight(
@@ -184,7 +197,7 @@ scene.add(
 
 
 /* =========================================================
-   SYSTEMS
+   CORE SYSTEMS
    ========================================================= */
 
 const input =
@@ -200,7 +213,6 @@ const settings =
 
 settings.load();
 
-
 camera.fov =
   settings.data.fov;
 
@@ -208,49 +220,37 @@ camera.updateProjectionMatrix();
 
 
 const player =
-  new Player(
-    camera
-  );
+  new Player(camera);
 
 
 const world =
-  new World(
-    scene
-  );
+  new World(scene);
+
+world.build();
 
 
 const enemies =
   new THREE.Group();
 
-scene.add(
-  enemies
-);
+scene.add(enemies);
 
 
 const effects =
   new THREE.Group();
 
-scene.add(
-  effects
-);
+scene.add(effects);
 
 
 const particles =
-  new Particles(
-    effects
-  );
+  new Particles(effects);
 
 
 const progression =
-  new Progression(
-    player
-  );
+  new Progression(player);
 
 
 const caseSystem =
-  new CaseSystem(
-    progression
-  );
+  new CaseSystem(progression);
 
 
 const hud =
@@ -259,9 +259,6 @@ const hud =
 
 const missionVoice =
   new MissionVoice();
-
-
-let mission = null;
 
 
 const combat =
@@ -289,10 +286,36 @@ const weapon =
   );
 
 
-const touch =
-  new Touch(
-    input
+new Touch(input);
+
+
+/* =========================================================
+   NEW SYSTEMS
+   ========================================================= */
+
+const saveSystem =
+  new SaveSystem(
+    player,
+    progression
   );
+
+saveSystem.load();
+
+
+const statistics =
+  new Statistics();
+
+
+const extraction =
+  new Extraction(scene);
+
+
+const resultScreen =
+  new MissionResult();
+
+
+let objectives = null;
+let enemySpawner = null;
 
 
 /* =========================================================
@@ -305,10 +328,8 @@ const controls =
     document.body
   );
 
-
 let pointerLocked =
   false;
-
 
 controls.addEventListener(
   "lock",
@@ -316,7 +337,6 @@ controls.addEventListener(
     pointerLocked = true;
   }
 );
-
 
 controls.addEventListener(
   "unlock",
@@ -327,35 +347,38 @@ controls.addEventListener(
 
 
 /* =========================================================
-   LOOK SYSTEM
+   LOOK
    ========================================================= */
 
 let yaw = 0;
 let pitch = 0;
 
-let lookSensitivity =
-  settings.data.sensitivity;
+const sensitivity =
+  Number(
+    settings.data.sensitivity ||
+    0.002
+  );
 
 
 window.addEventListener(
   "mousemove",
   event => {
+
     if (!running) return;
 
     if (
-      !pointerLocked &&
-      !("ontouchstart" in window)
+      !pointerLocked
     ) {
       return;
     }
 
     yaw -=
       event.movementX *
-      lookSensitivity;
+      sensitivity;
 
     pitch -=
       event.movementY *
-      lookSensitivity;
+      sensitivity;
 
     pitch =
       Math.max(
@@ -379,27 +402,28 @@ window.addEventListener(
 
 
 /* =========================================================
-   MOBILE AIM
+   MOBILE LOOK
    ========================================================= */
 
-let touchLookActive =
-  false;
-
-let touchLookX = 0;
-let touchLookY = 0;
+let touchLook = false;
+let lastTouchX = 0;
+let lastTouchY = 0;
 
 
 renderer.domElement.addEventListener(
   "pointerdown",
   event => {
+
     if (
       event.pointerType ===
       "touch"
     ) {
-      touchLookActive = true;
-      touchLookX =
+      touchLook = true;
+
+      lastTouchX =
         event.clientX;
-      touchLookY =
+
+      lastTouchY =
         event.clientY;
     }
   }
@@ -409,8 +433,9 @@ renderer.domElement.addEventListener(
 renderer.domElement.addEventListener(
   "pointermove",
   event => {
+
     if (
-      !touchLookActive ||
+      !touchLook ||
       event.pointerType !==
         "touch"
     ) {
@@ -419,26 +444,26 @@ renderer.domElement.addEventListener(
 
     const dx =
       event.clientX -
-      touchLookX;
+      lastTouchX;
 
     const dy =
       event.clientY -
-      touchLookY;
+      lastTouchY;
 
-    touchLookX =
+    lastTouchX =
       event.clientX;
 
-    touchLookY =
+    lastTouchY =
       event.clientY;
 
     yaw -=
       dx *
-      lookSensitivity *
+      sensitivity *
       1.7;
 
     pitch -=
       dy *
-      lookSensitivity *
+      sensitivity *
       1.7;
 
     pitch =
@@ -465,12 +490,20 @@ renderer.domElement.addEventListener(
 renderer.domElement.addEventListener(
   "pointerup",
   event => {
+
     if (
       event.pointerType ===
       "touch"
     ) {
-      touchLookActive = false;
+      touchLook = false;
     }
+  }
+);
+
+renderer.domElement.addEventListener(
+  "pointercancel",
+  () => {
+    touchLook = false;
   }
 );
 
@@ -480,39 +513,50 @@ renderer.domElement.addEventListener(
    ========================================================= */
 
 let running = false;
-let gameFinished = false;
+let finished = false;
 
 let currentMissionType =
   "tdm";
 
-let missionStartedAt =
-  0;
-
-let hostageMarker = null;
-
-let hvt = null;
+let mission = null;
 
 
 /* =========================================================
-   BUILD WORLD
+   EXTRACTION LOCATION
    ========================================================= */
 
-world.build();
+function getExtractionPoint() {
+
+  /*
+   * We deliberately don't depend on a method that may not
+   * exist in the older World.js file.
+   */
+
+  return new THREE.Vector3(
+    -35,
+    0,
+    -35
+  );
+}
 
 
 /* =========================================================
-   HOSTAGE MARKER
+   HOSTAGE
    ========================================================= */
 
-function createHostageMarker() {
-  if (hostageMarker) {
+let hostage = null;
+
+function createHostage() {
+
+  if (hostage) {
     scene.remove(
-      hostageMarker
+      hostage
     );
   }
 
-  hostageMarker =
+  hostage =
     new THREE.Group();
+
 
   const body =
     new THREE.Mesh(
@@ -529,10 +573,6 @@ function createHostageMarker() {
 
   body.position.y =
     0.8;
-
-  hostageMarker.add(
-    body
-  );
 
 
   const ring =
@@ -551,46 +591,21 @@ function createHostageMarker() {
   ring.rotation.x =
     Math.PI / 2;
 
-  ring.position.y =
-    0.05;
 
-  hostageMarker.add(
-    ring
-  );
+  hostage.add(body);
+  hostage.add(ring);
 
 
-  hostageMarker.position.set(
+  hostage.position.set(
     20,
     0,
     -18
   );
 
+
   scene.add(
-    hostageMarker
+    hostage
   );
-}
-
-
-/* =========================================================
-   HVT
-   ========================================================= */
-
-function createHVT() {
-  hvt = null;
-
-  const candidate =
-    enemies.children[0];
-
-  if (!candidate) return;
-
-  candidate.userData.isHVT =
-    true;
-
-  candidate.userData.hp =
-    250;
-
-  hvt =
-    candidate;
 }
 
 
@@ -599,9 +614,11 @@ function createHVT() {
    ========================================================= */
 
 function clearEnemies() {
+
   while (
     enemies.children.length
   ) {
+
     const enemy =
       enemies.children[
         enemies.children.length - 1
@@ -615,10 +632,30 @@ function clearEnemies() {
 
 
 /* =========================================================
+   HVT
+   ========================================================= */
+
+function createHVT() {
+
+  const target =
+    enemies.children[0];
+
+  if (!target) return;
+
+  target.userData.isHVT =
+    true;
+
+  target.userData.hp =
+    250;
+}
+
+
+/* =========================================================
    START MISSION
    ========================================================= */
 
 function startMission() {
+
   currentMissionType =
     missionSelect.value;
 
@@ -627,25 +664,32 @@ function startMission() {
       currentMissionType
     );
 
+
   player.reset();
 
   clearEnemies();
 
-  if (hostageMarker) {
+  extraction.remove();
+
+
+  if (hostage) {
     scene.remove(
-      hostageMarker
+      hostage
     );
 
-    hostageMarker =
-      null;
+    hostage = null;
   }
 
 
-  ai.spawn(
+  const enemyCount =
     currentMissionType ===
       "survival"
-      ? 9
-      : 14
+      ? 8
+      : 14;
+
+
+  ai.spawn(
+    enemyCount
   );
 
 
@@ -661,8 +705,36 @@ function startMission() {
     currentMissionType ===
     "hostage"
   ) {
-    createHostageMarker();
+    createHostage();
   }
+
+
+  if (
+    currentMissionType ===
+    "survival"
+  ) {
+
+    enemySpawner =
+      new EnemySpawner(ai);
+
+    enemySpawner.start();
+
+  } else {
+
+    enemySpawner =
+      null;
+  }
+
+
+  objectives =
+    new ObjectiveSystem(
+      currentMissionType,
+      player,
+      enemies,
+      {
+        getExtractionPoint
+      }
+    );
 
 
   weapon.equip(
@@ -670,11 +742,8 @@ function startMission() {
   );
 
 
+  finished = false;
   running = true;
-  gameFinished = false;
-
-  missionStartedAt =
-    performance.now();
 
 
   menu.classList.add(
@@ -686,18 +755,17 @@ function startMission() {
   );
 
 
-  const missionInfo =
+  const info =
     MISSIONS[
       currentMissionType
     ];
 
 
   $("missionName").textContent =
-    missionInfo.name;
-
+    info.name;
 
   $("objective").textContent =
-    missionInfo.objective;
+    info.objective;
 
 
   missionVoice.playMission(
@@ -714,64 +782,107 @@ function startMission() {
 
 
 /* =========================================================
-   END MISSION
+   COMPLETE MISSION
    ========================================================= */
 
-function finishMission(success) {
-  if (gameFinished) return;
+function completeMission() {
 
-  gameFinished = true;
+  if (finished) return;
+
+  finished = true;
   running = false;
 
-  if (success) {
-    progression.rewardXP(
-      500
-    );
 
-    player.score +=
-      500;
+  const reward =
+    500;
 
-    hud.toast(
-      "MISSION COMPLETE"
-    );
+  progression.rewardXP(
+    reward
+  );
 
-    missionVoice.say(
-      "COMMAND",
-      "Mission complete. Return to base."
-    );
-  } else {
-    hud.toast(
-      "MISSION FAILED"
-    );
-
-    missionVoice.say(
-      "COMMAND",
-      "Operator down. Mission failed."
-    );
-  }
+  player.score +=
+    reward;
 
 
-  if (
-    pointerLocked
-  ) {
+  statistics.missionComplete();
+  statistics.victory();
+
+  saveSystem.save();
+
+
+  missionVoice.say(
+    "COMMAND",
+    "Mission complete. Return to base."
+  );
+
+
+  if (pointerLocked) {
     controls.unlock();
   }
+
+
+  resultScreen.show(
+    true,
+    player.score,
+    reward
+  );
 
 
   setTimeout(
     () => {
       hud.hide();
-      menu.classList.remove(
-        "hidden"
-      );
     },
-    2500
+    100
   );
 }
 
 
 /* =========================================================
-   COMBAT CALLBACKS
+   FAIL MISSION
+   ========================================================= */
+
+function failMission() {
+
+  if (finished) return;
+
+  finished = true;
+  running = false;
+
+
+  statistics.death();
+
+  saveSystem.save();
+
+
+  missionVoice.say(
+    "COMMAND",
+    "Operator down. Mission failed."
+  );
+
+
+  if (pointerLocked) {
+    controls.unlock();
+  }
+
+
+  resultScreen.show(
+    false,
+    player.score,
+    0
+  );
+
+
+  setTimeout(
+    () => {
+      hud.hide();
+    },
+    100
+  );
+}
+
+
+/* =========================================================
+   COMBAT
    ========================================================= */
 
 combat.onHit =
@@ -784,16 +895,16 @@ combat.onHit =
     const position =
       enemy.position.clone();
 
-    position.y +=
-      1.2;
+    position.y += 1;
+
 
     particles.burst(
       position,
       headshot
         ? 0xffffff
-        : 0xffc86b,
+        : 0xffb84d,
       headshot
-        ? 16
+        ? 14
         : 8
     );
   };
@@ -805,6 +916,11 @@ combat.onKill =
     headshot
   ) => {
 
+    statistics.kill(
+      headshot
+    );
+
+
     progression.rewardXP(
       headshot
         ? 75
@@ -815,49 +931,37 @@ combat.onKill =
     particles.burst(
       enemy.position,
       0xff4055,
-      18
+      15
+    );
+
+
+    objectives?.registerKill(
+      enemy
     );
 
 
     if (
+      mission &&
       currentMissionType ===
-      "tdm"
+        "tdm"
     ) {
       mission.kill();
     }
 
 
     if (
+      mission &&
       currentMissionType ===
-      "hvt" &&
+        "hvt" &&
       enemy.userData.isHVT
     ) {
       mission.kill();
     }
-
-
-    scoreUpdate();
   };
 
 
 /* =========================================================
-   UI SCORE
-   ========================================================= */
-
-function scoreUpdate() {
-  $("score").textContent =
-    player.score;
-
-  $("level").textContent =
-    player.level;
-
-  $("xp-value").textContent =
-    player.xp;
-}
-
-
-/* =========================================================
-   WEAPON SWITCH
+   WEAPONS
    ========================================================= */
 
 const weaponOrder = [
@@ -867,20 +971,22 @@ const weaponOrder = [
   "breach"
 ];
 
-
 let weaponIndex = 0;
 
 
 function switchWeapon() {
+
   weaponIndex =
     (weaponIndex + 1) %
     weaponOrder.length;
+
 
   weapon.equip(
     weaponOrder[
       weaponIndex
     ]
   );
+
 
   hud.toast(
     WEAPONS[
@@ -892,14 +998,12 @@ function switchWeapon() {
 }
 
 
-/* =========================================================
-   KEYBOARD WEAPONS
-   ========================================================= */
-
 window.addEventListener(
   "keydown",
   event => {
+
     if (!running) return;
+
 
     if (
       event.code ===
@@ -911,6 +1015,7 @@ window.addEventListener(
       );
     }
 
+
     if (
       event.code ===
       "Digit2"
@@ -920,6 +1025,7 @@ window.addEventListener(
         "spectre"
       );
     }
+
 
     if (
       event.code ===
@@ -931,6 +1037,7 @@ window.addEventListener(
       );
     }
 
+
     if (
       event.code ===
       "Digit4"
@@ -941,35 +1048,26 @@ window.addEventListener(
       );
     }
 
+
     if (
       event.code ===
       "KeyR"
     ) {
       weapon.reload();
     }
-
-    if (
-      event.code ===
-      "Escape"
-    ) {
-      if (
-        pointerLocked
-      ) {
-        controls.unlock();
-      }
-    }
   }
 );
 
 
 /* =========================================================
-   MOBILE BUTTONS
+   MOBILE ACTIONS
    ========================================================= */
 
 $("mobile-switch")
   ?.addEventListener(
     "pointerdown",
     () => {
+
       if (running) {
         switchWeapon();
       }
@@ -981,6 +1079,7 @@ $("mobile-reload")
   ?.addEventListener(
     "pointerdown",
     () => {
+
       if (running) {
         weapon.reload();
       }
@@ -1001,7 +1100,7 @@ deploy.addEventListener(
 
 
 /* =========================================================
-   CASE SYSTEM
+   CASE
    ========================================================= */
 
 window.openCase =
@@ -1011,6 +1110,7 @@ window.openCase =
       caseSystem.open();
 
     if (!result) {
+
       hud.toast(
         "NO CASE KEY"
       );
@@ -1018,9 +1118,13 @@ window.openCase =
       return;
     }
 
+
     hud.toast(
       `${result.rarity.toUpperCase()} — ${result.item}`
     );
+
+
+    saveSystem.save();
   };
 
 
@@ -1033,7 +1137,10 @@ const clock =
 
 
 function update(dt) {
-  if (!running) return;
+
+  if (!running) {
+    return;
+  }
 
 
   /* PLAYER */
@@ -1056,7 +1163,13 @@ function update(dt) {
   if (
     input.mouse.down
   ) {
-    weapon.fire();
+
+    const fired =
+      weapon.fire();
+
+    if (fired) {
+      statistics.shot();
+    }
   }
 
 
@@ -1065,7 +1178,9 @@ function update(dt) {
   if (
     input.reload
   ) {
+
     weapon.reload();
+
     input.reload = false;
   }
 
@@ -1077,6 +1192,13 @@ function update(dt) {
   );
 
 
+  /* SURVIVAL WAVES */
+
+  enemySpawner?.update(
+    dt
+  );
+
+
   /* PARTICLES */
 
   particles.update(
@@ -1084,9 +1206,16 @@ function update(dt) {
   );
 
 
+  /* OBJECTIVES */
+
+  objectives?.update(
+    dt
+  );
+
+
   /* MISSION */
 
-  mission.update(
+  mission?.update(
     dt
   );
 
@@ -1095,29 +1224,63 @@ function update(dt) {
 
   if (
     currentMissionType ===
-    "hostage" &&
-    hostageMarker
+      "hostage" &&
+    hostage
   ) {
 
     const distance =
       camera.position.distanceTo(
-        hostageMarker.position
+        hostage.position
       );
+
 
     if (
       distance < 3
     ) {
-      mission.hostageSecured();
 
-      hostageMarker
-        .children[0]
+      objectives?.hostageSecured();
+
+      hostage.children[0]
         .material.color
         .setHex(
           0x55ff88
         );
 
+
       $("objective").textContent =
-        "HOSTAGE SECURED — EXTRACTION COMPLETE";
+        "HOSTAGE SECURED — MOVE TO EXTRACTION";
+    }
+  }
+
+
+  /* EXTRACTION */
+
+  if (
+    objectives?.extractionActive
+  ) {
+
+    const point =
+      objectives.extractionPosition ||
+      getExtractionPoint();
+
+
+    extraction.create(
+      point
+    );
+
+
+    const distance =
+      camera.position.distanceTo(
+        point
+      );
+
+
+    if (
+      distance < 4
+    ) {
+
+      objectives.complete =
+        true;
     }
   }
 
@@ -1132,12 +1295,25 @@ function update(dt) {
     const remaining =
       Math.max(
         0,
-        60 -
-        mission.time
+        Math.ceil(
+          60 -
+          mission.time
+        )
       );
 
-    $("objective").textContent =
-      `SURVIVE — ${Math.ceil(remaining)} SECONDS`;
+
+    if (
+      objectives?.extractionActive
+    ) {
+
+      $("objective").textContent =
+        "EXTRACTION ACTIVE — REACH THE ZONE";
+
+    } else {
+
+      $("objective").textContent =
+        `SURVIVE — ${remaining} SECONDS`;
+    }
   }
 
 
@@ -1149,7 +1325,10 @@ function update(dt) {
   ) {
 
     $("objective").textContent =
-      `ELIMINATE HOSTILES — ${mission.progress}/18`;
+      `ELIMINATE HOSTILES — ${
+        objectives?.kills ||
+        mission.progress
+      }/18`;
   }
 
 
@@ -1160,33 +1339,56 @@ function update(dt) {
     "hvt"
   ) {
 
-    $("objective").textContent =
-      hvt &&
-      hvt.userData.hp > 0
-        ? "ELIMINATE HIGH VALUE TARGET"
-        : "TARGET NEUTRALIZED";
+    if (
+      objectives?.extractionActive
+    ) {
+
+      $("objective").textContent =
+        "TARGET NEUTRALIZED — MOVE TO EXTRACTION";
+
+    } else {
+
+      $("objective").textContent =
+        "ELIMINATE HIGH VALUE TARGET";
+    }
   }
 
 
-  /* MISSION COMPLETE */
+  /* HOSTAGE */
 
   if (
-    mission.complete
+    currentMissionType ===
+    "hostage" &&
+    objectives?.extractionActive
   ) {
-    finishMission(
-      true
-    );
+
+    $("objective").textContent =
+      "HOSTAGE SECURED — MOVE TO EXTRACTION";
   }
 
 
-  /* PLAYER DEATH */
+  /* SUCCESS */
+
+  if (
+    objectives?.complete ||
+    mission?.complete
+  ) {
+
+    completeMission();
+
+    return;
+  }
+
+
+  /* PLAYER DEAD */
 
   if (
     player.dead
   ) {
-    finishMission(
-      false
-    );
+
+    failMission();
+
+    return;
   }
 
 
@@ -1200,7 +1402,14 @@ function update(dt) {
   );
 
 
-  scoreUpdate();
+  $("score").textContent =
+    player.score;
+
+  $("level").textContent =
+    player.level;
+
+  $("xp-value").textContent =
+    player.xp;
 }
 
 
@@ -1209,9 +1418,11 @@ function update(dt) {
    ========================================================= */
 
 function animate() {
+
   requestAnimationFrame(
     animate
   );
+
 
   const dt =
     Math.min(
@@ -1219,14 +1430,15 @@ function animate() {
       0.05
     );
 
+
   update(dt);
+
 
   renderer.render(
     scene,
     camera
   );
 }
-
 
 animate();
 
@@ -1245,6 +1457,7 @@ window.addEventListener(
 
     camera.updateProjectionMatrix();
 
+
     renderer.setSize(
       innerWidth,
       innerHeight
@@ -1254,7 +1467,47 @@ window.addEventListener(
 
 
 /* =========================================================
-   INITIAL UI
+   CALLSIGN
+   ========================================================= */
+
+const savedCallsign =
+  localStorage.getItem(
+    "lastline_callsign"
+  );
+
+
+if (
+  savedCallsign &&
+  callsignInput
+) {
+
+  callsignInput.value =
+    savedCallsign;
+}
+
+
+callsignInput?.addEventListener(
+  "change",
+  () => {
+
+    const value =
+      callsignInput.value
+        .trim()
+        .toUpperCase();
+
+    if (value) {
+
+      localStorage.setItem(
+        "lastline_callsign",
+        value
+      );
+    }
+  }
+);
+
+
+/* =========================================================
+   INITIAL STATE
    ========================================================= */
 
 hud.hide();
@@ -1267,44 +1520,7 @@ $("objective").textContent =
 
 
 /* =========================================================
-   CALLSIGN
-   ========================================================= */
-
-callsignInput?.addEventListener(
-  "change",
-  () => {
-
-    const value =
-      callsignInput.value
-        .trim()
-        .toUpperCase();
-
-    if (value) {
-      localStorage.setItem(
-        "lastline_callsign",
-        value
-      );
-    }
-  }
-);
-
-
-const savedCallsign =
-  localStorage.getItem(
-    "lastline_callsign"
-  );
-
-if (
-  savedCallsign &&
-  callsignInput
-) {
-  callsignInput.value =
-    savedCallsign;
-}
-
-
-/* =========================================================
-   DEBUG / CONSOLE
+   DEBUG ACCESS
    ========================================================= */
 
 window.LastLine = {
@@ -1316,9 +1532,12 @@ window.LastLine = {
   weapon,
   mission,
   progression,
-  caseSystem
+  caseSystem,
+  objectives,
+  statistics
 };
 
+
 console.log(
-  "LAST LINE INITIALIZED"
+  "LAST LINE READY"
 );
