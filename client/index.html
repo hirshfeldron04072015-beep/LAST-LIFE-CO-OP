@@ -1,19 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width,
-             initial-scale=1,
-             maximum-scale=1,
-             minimum-scale=1,
-             viewport-fit=cover,
-             user-scalable=no"
-  />
-
-  <meta name="theme-color" content="#05070a" />
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  >
 
   <title>LAST LINE</title>
 
@@ -26,12 +19,11 @@
     html,
     body {
       margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #05070a;
-      color: #e8edf2;
+      background: #071018;
+      color: #eafcff;
       font-family:
         Inter,
         system-ui,
@@ -39,31 +31,28 @@
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
-      touch-action: none;
     }
 
     body {
-      position: fixed;
-      inset: 0;
+      touch-action: none;
+      user-select: none;
     }
 
     button,
-    select,
-    input {
+    input,
+    select {
       font: inherit;
     }
 
-    /* =========================================================
-       GAME
-       ========================================================= */
+    /* =====================================================
+       THREE.JS GAME
+    ===================================================== */
 
     #game {
       position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      z-index: 1;
       overflow: hidden;
-      background: #05070a;
     }
 
     #game canvas {
@@ -72,483 +61,721 @@
       height: 100%;
     }
 
-    /* =========================================================
-       MAIN MENU
-       ========================================================= */
+    /* =====================================================
+       MENU
+    ===================================================== */
 
     #menu {
       position: fixed;
       inset: 0;
-      z-index: 100;
+      z-index: 20;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       padding: 24px;
+
       background:
         radial-gradient(
-          circle at 50% 35%,
-          rgba(65, 80, 95, 0.18),
-          transparent 38%
+          circle at 50% 40%,
+          rgba(22, 72, 86, 0.22),
+          transparent 45%
         ),
         linear-gradient(
-          180deg,
-          rgba(2, 5, 8, 0.72),
-          rgba(2, 5, 8, 0.96)
+          135deg,
+          rgba(3, 9, 13, 0.97),
+          rgba(7, 16, 24, 0.94)
         );
     }
 
-    .menu-panel {
-      width: min(460px, 94vw);
-      padding: 30px;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 18px;
+    .menuBox {
+      width: min(470px, 94vw);
+
+      padding: 38px;
+
+      border: 1px solid rgba(76, 222, 255, 0.25);
+
       background:
         linear-gradient(
-          180deg,
-          rgba(16, 21, 27, 0.96),
-          rgba(8, 11, 15, 0.97)
+          145deg,
+          rgba(15, 28, 36, 0.94),
+          rgba(7, 15, 21, 0.97)
         );
+
       box-shadow:
-        0 30px 80px rgba(0,0,0,0.6),
-        inset 0 1px 0 rgba(255,255,255,0.04);
+        0 25px 80px rgba(0, 0, 0, 0.55),
+        inset 0 0 40px rgba(49, 217, 255, 0.025);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
     .logo {
-      margin-bottom: 4px;
-      font-size: clamp(42px, 11vw, 72px);
-      font-weight: 900;
-      letter-spacing: 0.12em;
+      font-size: 58px;
       line-height: 0.95;
-      color: #f2f5f7;
-      text-shadow: 0 5px 30px rgba(255,255,255,0.08);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #f4fdff;
     }
 
-    .subtitle {
-      margin-bottom: 28px;
-      color: #7f8b96;
-      font-size: 12px;
+    .logo span {
+      color: #36e7ff;
+    }
+
+    .sub {
+      margin-top: 10px;
+      margin-bottom: 34px;
+
+      color: rgba(190, 225, 234, 0.55);
+
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
+      letter-spacing: 0.24em;
     }
 
     .field {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .field label {
       display: block;
-      margin-bottom: 7px;
-      color: #8d99a4;
-      font-size: 11px;
+
+      margin-bottom: 8px;
+
+      color: rgba(185, 226, 235, 0.55);
+
+      font-size: 10px;
       font-weight: 800;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      letter-spacing: 0.18em;
     }
 
     .field input,
     .field select {
       width: 100%;
-      height: 48px;
-      padding: 0 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 9px;
+      height: 52px;
+
+      padding: 0 15px;
+
+      border: 1px solid rgba(88, 217, 240, 0.18);
+      border-radius: 3px;
+
       outline: none;
-      background: rgba(255,255,255,0.045);
-      color: #f0f3f5;
+
+      background: rgba(0, 0, 0, 0.28);
+      color: #eafcff;
+
+      font-size: 14px;
+      letter-spacing: 0.06em;
     }
 
     .field input:focus,
     .field select:focus {
-      border-color: rgba(130,170,200,0.55);
+      border-color: rgba(54, 231, 255, 0.6);
+      box-shadow: 0 0 0 2px rgba(54, 231, 255, 0.06);
     }
 
     .field select option {
-      background: #10151a;
+      background: #0a151c;
       color: white;
+    }
+
+    .actions {
+      margin-top: 26px;
     }
 
     #deployButton {
       width: 100%;
-      height: 54px;
-      margin-top: 8px;
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #e7edf2;
-      color: #090c10;
+      height: 58px;
+
+      border: 1px solid rgba(54, 231, 255, 0.7);
+      border-radius: 3px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(36, 171, 193, 0.25),
+          rgba(12, 65, 77, 0.35)
+        );
+
+      color: #dffcff;
+
       font-size: 14px;
       font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      transition:
-        transform 0.12s ease,
-        background 0.12s ease;
-    }
+      letter-spacing: 0.22em;
 
-    #deployButton:active {
-      transform: scale(0.98);
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
     #deployButton:hover {
-      background: #ffffff;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(36, 201, 226, 0.42),
+          rgba(12, 83, 98, 0.48)
+        );
+
+      box-shadow:
+        0 0 30px rgba(54, 231, 255, 0.12);
+    }
+
+    #deployButton:active {
+      transform: scale(0.985);
+    }
+
+    #deployButton:disabled {
+      opacity: 0.55;
+      cursor: wait;
     }
 
     #menuStatus {
       min-height: 18px;
-      margin-top: 13px;
-      color: #71808b;
+
+      margin-top: 16px;
+
+      color: #63eaff;
+
       text-align: center;
-      font-size: 12px;
+
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
     }
 
-    .mode-info {
-      margin-top: 17px;
-      padding-top: 17px;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      color: #65727d;
-      font-size: 11px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    /* =========================================================
+    /* =====================================================
        LOADING
-       ========================================================= */
+    ===================================================== */
 
     #loadingScreen {
       position: fixed;
       inset: 0;
-      z-index: 200;
+      z-index: 100;
+
       display: none;
+
       align-items: center;
       justify-content: center;
-      background: #05070a;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(13, 48, 58, 0.38),
+          rgba(3, 8, 12, 0.98)
+        );
     }
 
-    .loading-box {
-      width: min(400px, 84vw);
+    .loadingBox {
+      width: min(360px, 80vw);
       text-align: center;
     }
 
-    .loading-title {
+    .loadingTitle {
       margin-bottom: 18px;
-      font-size: 13px;
+
+      color: #dffcff;
+
+      font-size: 12px;
       font-weight: 900;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
+      letter-spacing: 0.24em;
     }
 
-    .loading-track {
+    .loadingTrack {
       width: 100%;
-      height: 4px;
+      height: 3px;
+
       overflow: hidden;
-      border-radius: 4px;
+
       background: rgba(255,255,255,0.08);
     }
 
     #loadingProgress {
       width: 0%;
       height: 100%;
-      background: #dfe7ed;
-      transition: width 0.2s ease;
+
+      background: #36e7ff;
+
+      box-shadow:
+        0 0 14px rgba(54, 231, 255, 0.7);
+
+      transition: width 0.08s linear;
     }
 
-    /* =========================================================
+    /* =====================================================
        HUD
-       ========================================================= */
+    ===================================================== */
 
     #hud {
       position: fixed;
       inset: 0;
-      z-index: 20;
-      pointer-events: none;
+      z-index: 10;
+
       display: none;
+
+      pointer-events: none;
     }
 
-    #hudTop {
+    .hudTop {
       position: absolute;
-      top: max(18px, env(safe-area-inset-top));
+
+      top: 18px;
       left: 18px;
       right: 18px;
+
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      gap: 10px;
     }
 
-    .hud-card {
-      min-width: 150px;
+    .hudCard {
+      min-width: 120px;
+
       padding: 10px 13px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-      background: rgba(4,7,10,0.60);
-      backdrop-filter: blur(7px);
+
+      border: 1px solid rgba(91, 211, 231, 0.16);
+
+      background: rgba(4, 12, 17, 0.58);
+
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
-    .hud-label {
-      color: #788692;
-      font-size: 9px;
+    .hudSmall {
+      color: rgba(186, 227, 236, 0.45);
+
+      font-size: 8px;
       font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      letter-spacing: 0.18em;
     }
 
-    .hud-value {
+    .hudBig {
       margin-top: 3px;
-      color: #edf2f5;
-      font-size: 14px;
+
+      color: #ecfcff;
+
+      font-size: 16px;
       font-weight: 800;
+      letter-spacing: 0.05em;
     }
 
-    #hudCenter {
+    #objective {
       position: absolute;
+
+      top: 88px;
       left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+
+      transform: translateX(-50%);
+
+      max-width: 90vw;
+
+      padding: 8px 14px;
+
+      border: 1px solid rgba(75, 211, 234, 0.12);
+
+      background: rgba(4, 12, 17, 0.48);
+
+      color: rgba(224, 249, 255, 0.78);
+
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+
+      text-align: center;
+
+      white-space: nowrap;
     }
+
+    /* =====================================================
+       CROSSHAIR
+    ===================================================== */
 
     #crosshair {
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
       width: 18px;
       height: 18px;
-      position: relative;
-      opacity: 0.8;
+
+      transform: translate(-50%, -50%);
     }
 
     #crosshair::before,
     #crosshair::after {
       content: "";
+
       position: absolute;
-      background: rgba(255,255,255,0.8);
+
+      background: rgba(226, 252, 255, 0.88);
     }
 
     #crosshair::before {
-      width: 2px;
-      height: 18px;
       left: 8px;
-      top: 0;
+      top: 2px;
+
+      width: 2px;
+      height: 14px;
     }
 
     #crosshair::after {
-      width: 18px;
-      height: 2px;
-      left: 0;
+      left: 2px;
       top: 8px;
+
+      width: 14px;
+      height: 2px;
     }
 
-    #hudBottom {
+    /* =====================================================
+       BOTTOM HUD
+    ===================================================== */
+
+    #bottomHud {
       position: absolute;
+
       left: 18px;
       right: 18px;
-      bottom: max(18px, env(safe-area-inset-bottom));
+      bottom: 18px;
+
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      gap: 15px;
+      gap: 14px;
     }
 
-    .hud-stat {
-      min-width: 120px;
-      padding: 11px 13px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-      background: rgba(4,7,10,0.62);
-      backdrop-filter: blur(7px);
+    .hudPanel {
+      padding: 11px 14px;
+
+      border: 1px solid rgba(91, 211, 231, 0.16);
+
+      background: rgba(4, 12, 17, 0.64);
+
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    #healthPanel {
+      width: min(280px, 42vw);
+    }
+
+    .healthRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: 7px;
+    }
+
+    #hpText {
+      color: #eaffff;
+
+      font-size: 12px;
+      font-weight: 900;
     }
 
     .bar {
-      width: 160px;
-      max-width: 30vw;
-      height: 7px;
-      margin-top: 6px;
+      width: 100%;
+      height: 5px;
+
+      background: rgba(255,255,255,0.08);
+
       overflow: hidden;
-      border-radius: 5px;
-      background: rgba(255,255,255,0.10);
     }
 
-    .bar-fill {
+    #hpFill {
       width: 100%;
       height: 100%;
-      background: #dfe7ed;
+
+      background: #42e8b1;
+
       transition: width 0.15s ease;
     }
 
-    #objective {
-      position: absolute;
-      left: 50%;
-      top: 76px;
-      transform: translateX(-50%);
-      width: min(520px, 80vw);
-      padding: 9px 14px;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 7px;
-      background: rgba(4,7,10,0.55);
-      color: #cbd4da;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-align: center;
-      text-transform: uppercase;
+    #weaponPanel {
+      min-width: 180px;
+      text-align: right;
+    }
+
+    #weaponName {
+      color: rgba(187, 229, 238, 0.55);
+
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+    }
+
+    #ammo {
+      margin-top: 3px;
+
+      color: #f0fdff;
+
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    #ammo span {
+      color: rgba(213, 244, 249, 0.35);
+      font-size: 13px;
     }
 
     #message {
       position: absolute;
+
       left: 50%;
-      bottom: 22%;
+      bottom: 27%;
+
       transform: translateX(-50%);
-      color: #ffffff;
-      font-size: 17px;
+
+      color: #dffcff;
+
+      font-size: 13px;
       font-weight: 900;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.18em;
+
       text-align: center;
-      text-shadow: 0 3px 20px #000;
+
+      text-shadow:
+        0 2px 18px rgba(0,0,0,0.8);
     }
 
-    /* =========================================================
+    /* =====================================================
        MOBILE CONTROLS
-       ========================================================= */
+       IMPORTANT: HIDDEN UNTIL CORE DEPLOYS
+    ===================================================== */
 
     #mobile {
       position: fixed;
       inset: 0;
-      z-index: 40;
+
+      z-index: 30;
+
       display: none;
+
       pointer-events: none;
     }
 
-    .stick-zone {
+    .stick {
       position: absolute;
-      bottom: 30px;
-      width: 145px;
-      height: 145px;
-      border: 1px solid rgba(255,255,255,0.13);
+
+      width: 132px;
+      height: 132px;
+
       border-radius: 50%;
-      background: rgba(255,255,255,0.035);
+
+      border: 1px solid rgba(76, 224, 248, 0.22);
+
+      background: rgba(7, 20, 27, 0.25);
+
       pointer-events: auto;
+
       touch-action: none;
     }
 
     #moveStick {
-      left: 25px;
+      left: 24px;
+      bottom: 24px;
     }
 
     #lookStick {
-      right: 25px;
+      right: 24px;
+      bottom: 24px;
     }
 
-    .stick-knob {
+    .knob {
       position: absolute;
+
       left: 50%;
       top: 50%;
-      width: 60px;
-      height: 60px;
-      transform: translate(-50%, -50%);
-      border: 1px solid rgba(255,255,255,0.18);
+
+      width: 54px;
+      height: 54px;
+
+      margin-left: -27px;
+      margin-top: -27px;
+
       border-radius: 50%;
-      background: rgba(255,255,255,0.10);
+
+      background: rgba(54, 231, 255, 0.2);
+
+      border: 1px solid rgba(54, 231, 255, 0.4);
+
+      box-shadow:
+        0 0 18px rgba(54, 231, 255, 0.08);
+
       pointer-events: none;
     }
 
-    .mobile-buttons {
+    .mobileButton {
       position: absolute;
-      right: 25px;
-      bottom: 190px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: auto;
-    }
 
-    .mobile-button {
-      width: 62px;
-      height: 62px;
-      border: 1px solid rgba(255,255,255,0.15);
+      width: 68px;
+      height: 68px;
+
       border-radius: 50%;
-      background: rgba(5,8,12,0.58);
-      color: #eef2f4;
+
+      border: 1px solid rgba(133, 232, 250, 0.25);
+
+      color: #e8fcff;
+
       font-size: 10px;
       font-weight: 900;
-      letter-spacing: 0.05em;
-      touch-action: manipulation;
-    }
+      letter-spacing: 0.08em;
 
-    .mobile-button:active {
-      background: rgba(255,255,255,0.20);
-      transform: scale(0.94);
+      pointer-events: auto;
+
+      touch-action: none;
     }
 
     #fire {
-      width: 78px;
-      height: 78px;
-      border-color: rgba(255,255,255,0.25);
+      right: 42%;
+      bottom: 30px;
+
+      background: rgba(178, 31, 48, 0.38);
     }
 
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
+    #reload {
+      right: 24px;
+      bottom: 176px;
 
-    @media (pointer: coarse) {
+      width: 58px;
+      height: 58px;
+
+      background: rgba(255,255,255,0.08);
+    }
+
+    #crouch {
+      right: 102px;
+      bottom: 178px;
+
+      width: 54px;
+      height: 54px;
+
+      background: rgba(255,255,255,0.07);
+    }
+
+    #sprint {
+      left: 175px;
+      bottom: 34px;
+
+      width: 58px;
+      height: 58px;
+
+      background: rgba(255,255,255,0.07);
+    }
+
+    #jump {
+      right: 102px;
+      bottom: 30px;
+
+      width: 54px;
+      height: 54px;
+
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* =====================================================
+       DESKTOP
+    ===================================================== */
+
+    @media (pointer: fine) {
       #mobile {
-        display: block;
-      }
-
-      #hudBottom {
-        bottom: 190px;
-      }
-
-      .hud-stat {
-        min-width: 95px;
-      }
-
-      .bar {
-        width: 110px;
+        display: none !important;
       }
     }
 
-    @media (max-width: 600px) {
-      #menu {
-        padding: 14px;
-      }
+    /* =====================================================
+       PHONE
+    ===================================================== */
 
-      .menu-panel {
-        padding: 23px;
+    @media (max-width: 700px) {
+      .menuBox {
+        padding: 27px;
       }
 
       .logo {
-        font-size: 44px;
+        font-size: 48px;
       }
 
-      #hudTop {
+      .sub {
+        font-size: 9px;
+      }
+
+      .hudTop {
+        top: 10px;
         left: 10px;
         right: 10px;
       }
 
-      #hudBottom {
+      .hudCard {
+        min-width: 0;
+        flex: 1;
+        padding: 8px 9px;
+      }
+
+      .hudTop .hudCard:nth-child(2) {
+        display: none;
+      }
+
+      #objective {
+        top: 75px;
+        font-size: 8px;
+      }
+
+      #bottomHud {
         left: 10px;
         right: 10px;
+        bottom: 10px;
       }
 
-      .hud-card {
-        min-width: 105px;
-        padding: 8px 10px;
+      #healthPanel {
+        width: 42vw;
       }
 
-      .stick-zone {
-        width: 125px;
-        height: 125px;
-        bottom: 20px;
+      #weaponPanel {
+        min-width: 0;
+      }
+
+      .stick {
+        width: 124px;
+        height: 124px;
       }
 
       #moveStick {
-        left: 15px;
+        left: 16px;
+        bottom: 16px;
       }
 
       #lookStick {
-        right: 15px;
+        right: 16px;
+        bottom: 16px;
       }
 
-      .mobile-buttons {
+      #fire {
+        right: 35%;
+        bottom: 20px;
+      }
+
+      #reload {
         right: 15px;
-        bottom: 165px;
+        bottom: 158px;
+      }
+
+      #crouch {
+        right: 88px;
+        bottom: 158px;
+      }
+
+      #jump {
+        right: 88px;
+        bottom: 18px;
+      }
+
+      #sprint {
+        left: 154px;
+        bottom: 22px;
       }
     }
   </style>
@@ -556,48 +783,61 @@
 
 <body>
 
-  <!-- =======================================================
-       THREE.JS GAME CANVAS
-       ======================================================== -->
+  <!-- =====================================================
+       THREE.JS CANVAS CONTAINER
+  ====================================================== -->
 
   <div id="game"></div>
 
-  <!-- =======================================================
+
+  <!-- =====================================================
        MAIN MENU
-       ======================================================== -->
+  ====================================================== -->
 
   <div id="menu">
-    <div class="menu-panel">
 
-      <div class="logo">LAST LINE</div>
+    <div class="menuBox">
 
-      <div class="subtitle">
-        Tactical Operations
+      <div class="logo">
+        LAST <span>LINE</span>
       </div>
 
+      <div class="sub">
+        TACTICAL CO-OP OPERATIONS
+      </div>
+
+
       <div class="field">
-        <label for="callsign">Callsign</label>
+
+        <label for="callsign">
+          CALLSIGN
+        </label>
 
         <input
           id="callsign"
-          type="text"
-          value="PHANTOM"
+          value="Phantom"
           maxlength="16"
           autocomplete="off"
           spellcheck="false"
-        />
+        >
+
       </div>
 
+
       <div class="field">
-        <label for="mode">Operation</label>
+
+        <label for="mode">
+          OPERATION
+        </label>
 
         <select id="mode">
-          <option value="survival">
-            SURVIVAL
+
+          <option value="rescue">
+            RESCUE THE HOSTAGE
           </option>
 
-          <option value="hostage">
-            RESCUE HOSTAGE
+          <option value="survival">
+            SURVIVAL
           </option>
 
           <option value="tdm">
@@ -607,184 +847,163 @@
           <option value="hvt">
             HIGH VALUE TARGET
           </option>
+
         </select>
+
       </div>
 
-      <button id="deployButton" type="button">
-        DEPLOY
-      </button>
+
+      <div class="actions">
+
+        <button
+          id="deployButton"
+          type="button"
+        >
+          DEPLOY
+        </button>
+
+      </div>
+
 
       <div id="menuStatus"></div>
 
-      <div class="mode-info">
-        Touch the left side to move.<br>
-        Drag the right side to look around.<br>
-        FIRE / RELOAD / SPRINT controls appear in combat.
-      </div>
-
     </div>
+
   </div>
 
-  <!-- =======================================================
+
+  <!-- =====================================================
        LOADING SCREEN
-       ======================================================== -->
+  ====================================================== -->
 
   <div id="loadingScreen">
-    <div class="loading-box">
 
-      <div class="loading-title">
-        Preparing Operation
+    <div class="loadingBox">
+
+      <div class="loadingTitle">
+        INITIALIZING OPERATION
       </div>
 
-      <div class="loading-track">
+      <div class="loadingTrack">
+
         <div id="loadingProgress"></div>
+
       </div>
 
     </div>
+
   </div>
 
-  <!-- =======================================================
+
+  <!-- =====================================================
        HUD
-       ======================================================== -->
+  ====================================================== -->
 
   <div id="hud">
 
-    <div id="hudTop">
+    <div class="hudTop">
 
-      <div class="hud-card">
-        <div class="hud-label">
-          Operator
+      <div class="hudCard">
+
+        <div class="hudSmall">
+          CALLSIGN
         </div>
 
         <div
+          class="hudBig"
           id="hudName"
-          class="hud-value"
         >
-          PHANTOM
+          Phantom
         </div>
+
       </div>
 
-      <div class="hud-card">
-        <div class="hud-label">
-          Level
+
+      <div class="hudCard">
+
+        <div class="hudSmall">
+          SCORE
         </div>
 
         <div
-          id="level"
-          class="hud-value"
+          class="hudBig"
+          id="score"
         >
-          1
+          0
         </div>
+
+      </div>
+
+
+      <div class="hudCard">
+
+        <div class="hudSmall">
+          HOSTILES
+        </div>
+
+        <div
+          class="hudBig"
+          id="enemies"
+        >
+          0
+        </div>
+
       </div>
 
     </div>
+
 
     <div id="objective">
-      OBJECTIVE: DEPLOY
+      OPERATION READY
     </div>
 
-    <div id="hudCenter">
-      <div id="crosshair"></div>
-    </div>
+
+    <div id="crosshair"></div>
+
 
     <div id="message"></div>
 
-    <div id="hudBottom">
 
-      <div class="hud-stat">
+    <div id="bottomHud">
 
-        <div class="hud-label">
-          Health
-        </div>
+      <div
+        class="hudPanel"
+        id="healthPanel"
+      >
 
-        <div
-          id="health"
-          class="hud-value"
-        >
-          100
-        </div>
+        <div class="healthRow">
 
-        <div class="bar">
-          <div
-            id="healthBar"
-            class="bar-fill"
-            style="width:100%"
-          ></div>
-        </div>
+          <div class="hudSmall">
+            VITALS
+          </div>
 
-      </div>
+          <div id="hpText">
+            100
+          </div>
 
-      <div class="hud-stat">
-
-        <div class="hud-label">
-          Armor
-        </div>
-
-        <div
-          id="armor"
-          class="hud-value"
-        >
-          50
         </div>
 
         <div class="bar">
-          <div
-            id="armorBar"
-            class="bar-fill"
-            style="width:100%"
-          ></div>
+
+          <div id="hpFill"></div>
+
         </div>
 
       </div>
 
-      <div class="hud-stat">
 
-        <div class="hud-label">
-          Enemies
+      <div
+        class="hudPanel"
+        id="weaponPanel"
+      >
+
+        <div id="weaponName">
+          PRIMARY
         </div>
 
-        <div
-          id="enemies"
-          class="hud-value"
-        >
-          0
-        </div>
-
-      </div>
-
-      <div class="hud-stat">
-
-        <div class="hud-label">
-          Score
-        </div>
-
-        <div
-          id="score"
-          class="hud-value"
-        >
-          0
-        </div>
-
-      </div>
-
-      <div class="hud-stat">
-
-        <div class="hud-label">
-          Weapon
-        </div>
-
-        <div
-          id="weapon"
-          class="hud-value"
-        >
-          CARBINE
-        </div>
-
-        <div
-          id="ammo"
-          class="hud-value"
-        >
-          30 / 150
+        <div id="ammo">
+          30
+          <span>/ 120</span>
         </div>
 
       </div>
@@ -793,82 +1012,82 @@
 
   </div>
 
-  <!-- =======================================================
+
+  <!-- =====================================================
        MOBILE CONTROLS
-       ======================================================== -->
+       CORE WILL SHOW THIS AFTER DEPLOY
+  ====================================================== -->
 
   <div id="mobile">
 
     <div
+      class="stick"
       id="moveStick"
-      class="stick-zone"
-      aria-label="Movement"
     >
-      <div class="stick-knob"></div>
+      <div class="knob"></div>
     </div>
+
 
     <div
+      class="stick"
       id="lookStick"
-      class="stick-zone"
-      aria-label="Look"
     >
-      <div class="stick-knob"></div>
+      <div class="knob"></div>
     </div>
 
-    <div class="mobile-buttons">
 
-      <button
-        id="fire"
-        class="mobile-button"
-        type="button"
-      >
-        FIRE
-      </button>
+    <button
+      class="mobileButton"
+      id="fire"
+      type="button"
+    >
+      FIRE
+    </button>
 
-      <button
-        id="reload"
-        class="mobile-button"
-        type="button"
-      >
-        RELOAD
-      </button>
 
-      <button
-        id="sprint"
-        class="mobile-button"
-        type="button"
-      >
-        RUN
-      </button>
+    <button
+      class="mobileButton"
+      id="reload"
+      type="button"
+    >
+      R
+    </button>
 
-      <button
-        id="crouch"
-        class="mobile-button"
-        type="button"
-      >
-        CROUCH
-      </button>
 
-      <button
-        id="jump"
-        class="mobile-button"
-        type="button"
-      >
-        JUMP
-      </button>
+    <button
+      class="mobileButton"
+      id="crouch"
+      type="button"
+    >
+      CROUCH
+    </button>
 
-    </div>
+
+    <button
+      class="mobileButton"
+      id="sprint"
+      type="button"
+    >
+      RUN
+    </button>
+
+
+    <button
+      class="mobileButton"
+      id="jump"
+      type="button"
+    >
+      JUMP
+    </button>
 
   </div>
 
-  <!-- =======================================================
-       ENTRY POINT
-       ======================================================== -->
 
-  <script
-    type="module"
-    src="./src/main.js"
-  ></script>
+  <!-- =====================================================
+       MODULAR GAME ENTRY
+  ====================================================== -->
+
+  <script type="module" src="./src/main.js"></script>
 
 </body>
 </html>
