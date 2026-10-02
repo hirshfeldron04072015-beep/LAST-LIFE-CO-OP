@@ -1,26 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
 
   <meta
     name="viewport"
     content="width=device-width,
              initial-scale=1,
              maximum-scale=1,
-             user-scalable=no,
-             viewport-fit=cover"
-  >
+             minimum-scale=1,
+             viewport-fit=cover,
+             user-scalable=no"
+  />
 
-  <meta name="theme-color" content="#070b0f">
+  <meta name="theme-color" content="#05070a" />
 
   <title>LAST LINE</title>
 
   <style>
-    /* =====================================================
-       RESET
-    ===================================================== */
-
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -28,19 +25,20 @@
 
     html,
     body {
+      margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
-      margin: 0;
       overflow: hidden;
-
-      background: #070b0f;
-      color: #ffffff;
-
+      background: #05070a;
+      color: #e8edf2;
       font-family:
-        Arial,
-        Helvetica,
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
         sans-serif;
-
       touch-action: none;
     }
 
@@ -50,949 +48,827 @@
     }
 
     button,
-    input,
-    select {
+    select,
+    input {
       font: inherit;
     }
 
-    button {
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-
-    /* =====================================================
-       GAME CANVAS
-    ===================================================== */
+    /* =========================================================
+       GAME
+       ========================================================= */
 
     #game {
       position: fixed;
       inset: 0;
-      z-index: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
+      background: #05070a;
     }
 
     #game canvas {
-      position: absolute;
-      inset: 0;
-
+      display: block;
       width: 100%;
       height: 100%;
-
-      display: block;
     }
 
-
-    /* =====================================================
-       MAIN UI
-    ===================================================== */
-
-    #ui {
-      position: fixed;
-      inset: 0;
-
-      z-index: 20;
-
-      pointer-events: none;
-    }
-
-
-    /* =====================================================
-       MENU
-    ===================================================== */
+    /* =========================================================
+       MAIN MENU
+       ========================================================= */
 
     #menu {
       position: fixed;
       inset: 0;
-
       z-index: 100;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
-      padding:
-        max(20px, env(safe-area-inset-top))
-        max(20px, env(safe-area-inset-right))
-        max(20px, env(safe-area-inset-bottom))
-        max(20px, env(safe-area-inset-left));
-
+      padding: 24px;
       background:
         radial-gradient(
           circle at 50% 35%,
-          rgba(35, 190, 220, 0.12),
-          transparent 34%
+          rgba(65, 80, 95, 0.18),
+          transparent 38%
         ),
-        radial-gradient(
-          circle at 50% 80%,
-          rgba(0, 80, 100, 0.10),
-          transparent 42%
-        ),
-        #06090d;
-
-      pointer-events: auto;
+        linear-gradient(
+          180deg,
+          rgba(2, 5, 8, 0.72),
+          rgba(2, 5, 8, 0.96)
+        );
     }
 
-    .menuBox {
-      width: min(520px, 92vw);
-
-      padding: 38px;
-
-      border:
-        1px solid
-        rgba(120, 220, 240, 0.24);
-
+    .menu-panel {
+      width: min(460px, 94vw);
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 18px;
       background:
         linear-gradient(
-          145deg,
-          rgba(17, 24, 31, 0.97),
-          rgba(7, 11, 15, 0.97)
+          180deg,
+          rgba(16, 21, 27, 0.96),
+          rgba(8, 11, 15, 0.97)
         );
-
       box-shadow:
-        0 30px 100px
-        rgba(0, 0, 0, 0.7);
-
-      backdrop-filter: blur(12px);
+        0 30px 80px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     .logo {
-      text-align: center;
-
-      font-size:
-        clamp(42px, 10vw, 68px);
-
-      line-height: 0.95;
-
+      margin-bottom: 4px;
+      font-size: clamp(42px, 11vw, 72px);
       font-weight: 900;
-
-      letter-spacing: 0.10em;
+      letter-spacing: 0.12em;
+      line-height: 0.95;
+      color: #f2f5f7;
+      text-shadow: 0 5px 30px rgba(255,255,255,0.08);
     }
 
-    .logo span {
-      color: #55e6ff;
-    }
-
-    .sub {
-      margin-top: 16px;
-      margin-bottom: 34px;
-
-      text-align: center;
-
-      color: #71818b;
-
-      font-size: 10px;
-
+    .subtitle {
+      margin-bottom: 28px;
+      color: #7f8b96;
+      font-size: 12px;
       font-weight: 700;
-
       letter-spacing: 0.28em;
+      text-transform: uppercase;
     }
 
     .field {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
     }
 
     .field label {
       display: block;
-
       margin-bottom: 7px;
-
-      color: #7f8b93;
-
-      font-size: 10px;
-
+      color: #8d99a4;
+      font-size: 11px;
       font-weight: 800;
-
-      letter-spacing: 0.16em;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
     }
 
     .field input,
     .field select {
       width: 100%;
-
-      height: 50px;
-
-      padding:
-        0 14px;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.12);
-
-      border-radius: 6px;
-
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 9px;
       outline: none;
-
-      background: #0c1319;
-
-      color: #ffffff;
-
-      font-size: 15px;
+      background: rgba(255,255,255,0.045);
+      color: #f0f3f5;
     }
 
     .field input:focus,
     .field select:focus {
-      border-color:
-        rgba(85,230,255,0.55);
-
-      box-shadow:
-        0 0 0 2px
-        rgba(85,230,255,0.08);
+      border-color: rgba(130,170,200,0.55);
     }
 
-    .actions {
-      margin-top: 22px;
+    .field select option {
+      background: #10151a;
+      color: white;
     }
 
     #deployButton {
       width: 100%;
-
-      height: 58px;
-
-      border:
-        1px solid
-        rgba(130,235,255,0.65);
-
-      border-radius: 6px;
-
-      background:
-        linear-gradient(
-          180deg,
-          #dce4e7,
-          #aeb9be
-        );
-
-      color: #101417;
-
-      font-size: 15px;
-
-      font-weight: 900;
-
-      letter-spacing: 0.22em;
-
+      height: 54px;
+      margin-top: 8px;
+      border: 0;
+      border-radius: 10px;
       cursor: pointer;
-
-      touch-action: manipulation;
+      background: #e7edf2;
+      color: #090c10;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition:
+        transform 0.12s ease,
+        background 0.12s ease;
     }
 
     #deployButton:active {
-      transform: scale(0.985);
+      transform: scale(0.98);
     }
 
-    #deployButton:disabled {
-      opacity: 0.55;
-      cursor: default;
+    #deployButton:hover {
+      background: #ffffff;
     }
 
     #menuStatus {
       min-height: 18px;
-
-      margin-top: 14px;
-
+      margin-top: 13px;
+      color: #71808b;
       text-align: center;
-
-      color: #55e6ff;
-
-      font-size: 10px;
-
-      font-weight: 700;
-
-      letter-spacing: 0.12em;
+      font-size: 12px;
     }
 
-    .menuFooter {
-      margin-top: 22px;
-
+    .mode-info {
+      margin-top: 17px;
+      padding-top: 17px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      color: #65727d;
+      font-size: 11px;
+      line-height: 1.6;
       text-align: center;
-
-      color: #4f5a61;
-
-      font-size: 9px;
-
-      letter-spacing: 0.14em;
     }
 
-
-    /* =====================================================
+    /* =========================================================
        LOADING
-    ===================================================== */
+       ========================================================= */
 
     #loadingScreen {
       position: fixed;
       inset: 0;
-
-      z-index: 300;
-
+      z-index: 200;
       display: none;
-
       align-items: center;
       justify-content: center;
-
-      background:
-        rgba(3,6,9,0.96);
-
-      pointer-events: auto;
+      background: #05070a;
     }
 
-    .loadingBox {
-      width: min(380px, 80vw);
-
+    .loading-box {
+      width: min(400px, 84vw);
       text-align: center;
     }
 
-    .loadingTitle {
-      margin-bottom: 20px;
-
-      color: #ffffff;
-
-      font-size: 18px;
-
+    .loading-title {
+      margin-bottom: 18px;
+      font-size: 13px;
       font-weight: 900;
-
       letter-spacing: 0.25em;
+      text-transform: uppercase;
     }
 
-    .loadingTrack {
+    .loading-track {
       width: 100%;
       height: 4px;
-
       overflow: hidden;
-
-      background:
-        rgba(255,255,255,0.10);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.08);
     }
 
     #loadingProgress {
       width: 0%;
       height: 100%;
-
-      background: #55e6ff;
-
-      transition:
-        width 0.08s linear;
+      background: #dfe7ed;
+      transition: width 0.2s ease;
     }
 
-    .loadingText {
-      margin-top: 12px;
+    /* =========================================================
+       HUD
+       ========================================================= */
 
-      color: #65737b;
-
-      font-size: 9px;
-
-      letter-spacing: 0.18em;
-    }
-
-
-    /* =====================================================
-       BASIC FALLBACK HUD
-    ===================================================== */
-
-    #fallbackHud {
-      display: none;
-
+    #hud {
       position: fixed;
       inset: 0;
-
-      z-index: 30;
-
+      z-index: 20;
       pointer-events: none;
+      display: none;
     }
 
-    .fallbackTop {
+    #hudTop {
       position: absolute;
-
-      top:
-        max(14px, env(safe-area-inset-top));
-
-      left: 14px;
-      right: 14px;
-
+      top: max(18px, env(safe-area-inset-top));
+      left: 18px;
+      right: 18px;
       display: flex;
-
       justify-content: space-between;
-
-      gap: 8px;
+      align-items: flex-start;
     }
 
-    .fallbackCard {
-      padding: 8px 11px;
-
-      background:
-        rgba(5,9,13,0.68);
-
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
-
-      backdrop-filter: blur(5px);
+    .hud-card {
+      min-width: 150px;
+      padding: 10px 13px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      background: rgba(4,7,10,0.60);
+      backdrop-filter: blur(7px);
     }
 
-    .fallbackLabel {
-      color: #748088;
-
-      font-size: 8px;
-
-      font-weight: 700;
-
-      letter-spacing: 0.15em;
+    .hud-label {
+      color: #788692;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
-    .fallbackValue {
-      margin-top: 2px;
-
-      color: #ffffff;
-
-      font-size: 15px;
-
-      font-weight: 900;
+    .hud-value {
+      margin-top: 3px;
+      color: #edf2f5;
+      font-size: 14px;
+      font-weight: 800;
     }
 
-    #fallbackCrosshair {
+    #hudCenter {
       position: absolute;
-
       left: 50%;
       top: 50%;
-
-      width: 22px;
-      height: 22px;
-
-      transform:
-        translate(-50%, -50%);
+      transform: translate(-50%, -50%);
     }
 
-    #fallbackCrosshair::before,
-    #fallbackCrosshair::after {
+    #crosshair {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      opacity: 0.8;
+    }
+
+    #crosshair::before,
+    #crosshair::after {
       content: "";
-
       position: absolute;
-
-      background:
-        rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.8);
     }
 
-    #fallbackCrosshair::before {
-      left: 10px;
-      top: 0;
-
+    #crosshair::before {
       width: 2px;
-      height: 22px;
+      height: 18px;
+      left: 8px;
+      top: 0;
     }
 
-    #fallbackCrosshair::after {
-      left: 0;
-      top: 10px;
-
-      width: 22px;
+    #crosshair::after {
+      width: 18px;
       height: 2px;
+      left: 0;
+      top: 8px;
     }
 
+    #hudBottom {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 15px;
+    }
 
-    /* =====================================================
+    .hud-stat {
+      min-width: 120px;
+      padding: 11px 13px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      background: rgba(4,7,10,0.62);
+      backdrop-filter: blur(7px);
+    }
+
+    .bar {
+      width: 160px;
+      max-width: 30vw;
+      height: 7px;
+      margin-top: 6px;
+      overflow: hidden;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.10);
+    }
+
+    .bar-fill {
+      width: 100%;
+      height: 100%;
+      background: #dfe7ed;
+      transition: width 0.15s ease;
+    }
+
+    #objective {
+      position: absolute;
+      left: 50%;
+      top: 76px;
+      transform: translateX(-50%);
+      width: min(520px, 80vw);
+      padding: 9px 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 7px;
+      background: rgba(4,7,10,0.55);
+      color: #cbd4da;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    #message {
+      position: absolute;
+      left: 50%;
+      bottom: 22%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-align: center;
+      text-shadow: 0 3px 20px #000;
+    }
+
+    /* =========================================================
        MOBILE CONTROLS
-    ===================================================== */
+       ========================================================= */
 
     #mobile {
-      display: none;
-
       position: fixed;
       inset: 0;
-
-      z-index: 80;
-
+      z-index: 40;
+      display: none;
       pointer-events: none;
     }
 
-    /*
-      TouchControls.js can use these areas.
-      They remain invisible except for the controls
-      themselves.
-    */
-
-    #moveArea {
+    .stick-zone {
       position: absolute;
-
-      left: 0;
-      bottom: 0;
-
-      width: 48%;
-      height: 48%;
-
-      pointer-events: auto;
-    }
-
-    #lookArea {
-      position: absolute;
-
-      right: 0;
-      top: 0;
-
-      width: 58%;
-      height: 70%;
-
-      pointer-events: auto;
-    }
-
-    .touchStick {
-      position: absolute;
-
-      width: 132px;
-      height: 132px;
-
+      bottom: 30px;
+      width: 145px;
+      height: 145px;
+      border: 1px solid rgba(255,255,255,0.13);
       border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.15);
-
-      background:
-        rgba(255,255,255,0.045);
-
-      pointer-events: none;
-    }
-
-    #moveStick {
-      left: 24px;
-      bottom: 28px;
-    }
-
-    .touchKnob {
-      position: absolute;
-
-      left: 50%;
-      top: 50%;
-
-      width: 54px;
-      height: 54px;
-
-      margin:
-        -27px 0 0 -27px;
-
-      border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(85,230,255,0.45);
-
-      background:
-        rgba(85,230,255,0.16);
-    }
-
-    .touchButton {
-      position: absolute;
-
-      width: 64px;
-      height: 64px;
-
-      padding: 0;
-
-      border-radius: 50%;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.18);
-
-      background:
-        rgba(10,16,22,0.65);
-
-      color: #ffffff;
-
-      font-size: 10px;
-
-      font-weight: 900;
-
-      letter-spacing: 0.08em;
-
+      background: rgba(255,255,255,0.035);
       pointer-events: auto;
-
       touch-action: none;
     }
 
-    #shootButton {
-      right: 28px;
-      bottom: 42px;
-
-      width: 76px;
-      height: 76px;
-
-      border-color:
-        rgba(255,90,100,0.5);
-
-      background:
-        rgba(120,20,30,0.45);
+    #moveStick {
+      left: 25px;
     }
 
-    #reloadButton {
-      right: 30px;
-      bottom: 132px;
+    #lookStick {
+      right: 25px;
     }
 
-    #sprintButton {
-      left: 170px;
-      bottom: 38px;
+    .stick-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 60px;
+      height: 60px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.10);
+      pointer-events: none;
     }
 
-    #crouchButton {
-      right: 112px;
-      bottom: 38px;
+    .mobile-buttons {
+      position: absolute;
+      right: 25px;
+      bottom: 190px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
     }
 
-    #jumpButton {
-      right: 112px;
-      bottom: 112px;
+    .mobile-button {
+      width: 62px;
+      height: 62px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      background: rgba(5,8,12,0.58);
+      color: #eef2f4;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      touch-action: manipulation;
     }
 
-
-    /* =====================================================
-       MOBILE ACTIVE STATE
-    ===================================================== */
-
-    body.game-active #mobile {
-      display: block;
+    .mobile-button:active {
+      background: rgba(255,255,255,0.20);
+      transform: scale(0.94);
     }
 
-    body.game-active #fallbackHud {
-      display: block;
+    #fire {
+      width: 78px;
+      height: 78px;
+      border-color: rgba(255,255,255,0.25);
     }
 
-
-    /* =====================================================
+    /* =========================================================
        RESPONSIVE
-    ===================================================== */
+       ========================================================= */
 
     @media (pointer: coarse) {
-
       #mobile {
-        display: none;
-      }
-
-      body.game-active #mobile {
         display: block;
       }
 
-    }
-
-    @media (max-width: 700px) {
-
-      .menuBox {
-        padding: 28px 22px;
+      #hudBottom {
+        bottom: 190px;
       }
 
-      .sub {
-        margin-bottom: 26px;
+      .hud-stat {
+        min-width: 95px;
       }
 
+      .bar {
+        width: 110px;
+      }
     }
 
-    @media (orientation: landscape)
-      and (pointer: coarse) {
+    @media (max-width: 600px) {
+      #menu {
+        padding: 14px;
+      }
+
+      .menu-panel {
+        padding: 23px;
+      }
+
+      .logo {
+        font-size: 44px;
+      }
+
+      #hudTop {
+        left: 10px;
+        right: 10px;
+      }
+
+      #hudBottom {
+        left: 10px;
+        right: 10px;
+      }
+
+      .hud-card {
+        min-width: 105px;
+        padding: 8px 10px;
+      }
+
+      .stick-zone {
+        width: 125px;
+        height: 125px;
+        bottom: 20px;
+      }
 
       #moveStick {
-        left: 22px;
-        bottom: 18px;
+        left: 15px;
       }
 
-      #shootButton {
-        right: 24px;
-        bottom: 24px;
+      #lookStick {
+        right: 15px;
       }
 
-      #reloadButton {
-        right: 26px;
-        bottom: 112px;
+      .mobile-buttons {
+        right: 15px;
+        bottom: 165px;
       }
-
     }
-
-
-    /* =====================================================
-       NO AUDIO / STATUS
-    ===================================================== */
-
-    .silentBadge {
-      margin-top: 10px;
-
-      text-align: center;
-
-      color: #465158;
-
-      font-size: 8px;
-
-      letter-spacing: 0.14em;
-    }
-
   </style>
 </head>
 
-
 <body>
 
-  <!-- ===================================================
-       THREE.JS GAME
-  ==================================================== -->
+  <!-- =======================================================
+       THREE.JS GAME CANVAS
+       ======================================================== -->
 
-  <main id="game"></main>
+  <div id="game"></div>
 
+  <!-- =======================================================
+       MAIN MENU
+       ======================================================== -->
 
-  <!-- ===================================================
-       UI
-  ==================================================== -->
+  <div id="menu">
+    <div class="menu-panel">
 
-  <div id="ui">
+      <div class="logo">LAST LINE</div>
 
-
-    <!-- ================================================
-         MAIN MENU
-    ================================================= -->
-
-    <section id="menu">
-
-      <div class="menuBox">
-
-        <div class="logo">
-          LAST <span>LINE</span>
-        </div>
-
-        <div class="sub">
-          TACTICAL FPS
-        </div>
-
-
-        <div class="field">
-
-          <label for="callsign">
-            CALLSIGN
-          </label>
-
-          <input
-            id="callsign"
-            type="text"
-            value="PHANTOM"
-            maxlength="16"
-            autocomplete="off"
-            autocapitalize="characters"
-            spellcheck="false"
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label for="operation">
-            OPERATION
-          </label>
-
-          <select id="operation">
-
-            <option value="RESCUE">
-              RESCUE HOSTAGE
-            </option>
-
-            <option value="SURVIVAL">
-              SURVIVAL
-            </option>
-
-            <option value="TDM">
-              TEAM DEATHMATCH
-            </option>
-
-            <option value="HVT">
-              HIGH VALUE TARGET
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="actions">
-
-          <button
-            id="deployButton"
-            type="button"
-          >
-            DEPLOY
-          </button>
-
-        </div>
-
-
-        <div id="menuStatus">
-          SYSTEM READY
-        </div>
-
-
-        <div class="menuFooter">
-          TOUCH / MOUSE CONTROLS
-        </div>
-
-        <div class="silentBadge">
-          NO AUDIO
-        </div>
-
+      <div class="subtitle">
+        Tactical Operations
       </div>
 
-    </section>
+      <div class="field">
+        <label for="callsign">Callsign</label>
 
-
-    <!-- ================================================
-         LOADING SCREEN
-    ================================================= -->
-
-    <section id="loadingScreen">
-
-      <div class="loadingBox">
-
-        <div class="loadingTitle">
-          LAST LINE
-        </div>
-
-        <div class="loadingTrack">
-
-          <div id="loadingProgress"></div>
-
-        </div>
-
-        <div class="loadingText">
-          INITIALIZING OPERATIONS
-        </div>
-
+        <input
+          id="callsign"
+          type="text"
+          value="PHANTOM"
+          maxlength="16"
+          autocomplete="off"
+          spellcheck="false"
+        />
       </div>
 
-    </section>
+      <div class="field">
+        <label for="mode">Operation</label>
 
+        <select id="mode">
+          <option value="survival">
+            SURVIVAL
+          </option>
 
-    <!-- ================================================
-         FALLBACK HUD
-    ================================================= -->
+          <option value="hostage">
+            RESCUE HOSTAGE
+          </option>
 
-    <section id="fallbackHud">
+          <option value="tdm">
+            TEAM DEATHMATCH
+          </option>
 
-      <div class="fallbackTop">
-
-        <div class="fallbackCard">
-
-          <div class="fallbackLabel">
-            CALLSIGN
-          </div>
-
-          <div
-            class="fallbackValue"
-            id="fallbackCallsign"
-          >
-            PHANTOM
-          </div>
-
-        </div>
-
-
-        <div class="fallbackCard">
-
-          <div class="fallbackLabel">
-            STATUS
-          </div>
-
-          <div
-            class="fallbackValue"
-            id="fallbackStatus"
-          >
-            READY
-          </div>
-
-        </div>
-
+          <option value="hvt">
+            HIGH VALUE TARGET
+          </option>
+        </select>
       </div>
 
+      <button id="deployButton" type="button">
+        DEPLOY
+      </button>
 
-      <div id="fallbackCrosshair"></div>
+      <div id="menuStatus"></div>
 
-    </section>
+      <div class="mode-info">
+        Touch the left side to move.<br>
+        Drag the right side to look around.<br>
+        FIRE / RELOAD / SPRINT controls appear in combat.
+      </div>
 
+    </div>
+  </div>
 
-    <!-- ================================================
-         MOBILE CONTROLS
-    ================================================= -->
+  <!-- =======================================================
+       LOADING SCREEN
+       ======================================================== -->
 
-    <section id="mobile">
+  <div id="loadingScreen">
+    <div class="loading-box">
 
-      <!-- movement touch area -->
+      <div class="loading-title">
+        Preparing Operation
+      </div>
 
-      <div id="moveArea">
+      <div class="loading-track">
+        <div id="loadingProgress"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =======================================================
+       HUD
+       ======================================================== -->
+
+  <div id="hud">
+
+    <div id="hudTop">
+
+      <div class="hud-card">
+        <div class="hud-label">
+          Operator
+        </div>
 
         <div
-          class="touchStick"
-          id="moveStick"
+          id="hudName"
+          class="hud-value"
         >
+          PHANTOM
+        </div>
+      </div>
 
-          <div class="touchKnob"></div>
+      <div class="hud-card">
+        <div class="hud-label">
+          Level
+        </div>
 
+        <div
+          id="level"
+          class="hud-value"
+        >
+          1
+        </div>
+      </div>
+
+    </div>
+
+    <div id="objective">
+      OBJECTIVE: DEPLOY
+    </div>
+
+    <div id="hudCenter">
+      <div id="crosshair"></div>
+    </div>
+
+    <div id="message"></div>
+
+    <div id="hudBottom">
+
+      <div class="hud-stat">
+
+        <div class="hud-label">
+          Health
+        </div>
+
+        <div
+          id="health"
+          class="hud-value"
+        >
+          100
+        </div>
+
+        <div class="bar">
+          <div
+            id="healthBar"
+            class="bar-fill"
+            style="width:100%"
+          ></div>
         </div>
 
       </div>
 
+      <div class="hud-stat">
 
-      <!-- camera look area -->
+        <div class="hud-label">
+          Armor
+        </div>
 
-      <div id="lookArea"></div>
+        <div
+          id="armor"
+          class="hud-value"
+        >
+          50
+        </div>
 
+        <div class="bar">
+          <div
+            id="armorBar"
+            class="bar-fill"
+            style="width:100%"
+          ></div>
+        </div>
 
-      <!-- action buttons -->
+      </div>
+
+      <div class="hud-stat">
+
+        <div class="hud-label">
+          Enemies
+        </div>
+
+        <div
+          id="enemies"
+          class="hud-value"
+        >
+          0
+        </div>
+
+      </div>
+
+      <div class="hud-stat">
+
+        <div class="hud-label">
+          Score
+        </div>
+
+        <div
+          id="score"
+          class="hud-value"
+        >
+          0
+        </div>
+
+      </div>
+
+      <div class="hud-stat">
+
+        <div class="hud-label">
+          Weapon
+        </div>
+
+        <div
+          id="weapon"
+          class="hud-value"
+        >
+          CARBINE
+        </div>
+
+        <div
+          id="ammo"
+          class="hud-value"
+        >
+          30 / 150
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =======================================================
+       MOBILE CONTROLS
+       ======================================================== -->
+
+  <div id="mobile">
+
+    <div
+      id="moveStick"
+      class="stick-zone"
+      aria-label="Movement"
+    >
+      <div class="stick-knob"></div>
+    </div>
+
+    <div
+      id="lookStick"
+      class="stick-zone"
+      aria-label="Look"
+    >
+      <div class="stick-knob"></div>
+    </div>
+
+    <div class="mobile-buttons">
 
       <button
-        class="touchButton"
-        id="shootButton"
+        id="fire"
+        class="mobile-button"
         type="button"
       >
         FIRE
       </button>
 
-
       <button
-        class="touchButton"
-        id="reloadButton"
+        id="reload"
+        class="mobile-button"
         type="button"
       >
         RELOAD
       </button>
 
-
       <button
-        class="touchButton"
-        id="sprintButton"
+        id="sprint"
+        class="mobile-button"
         type="button"
       >
-        SPRINT
+        RUN
       </button>
 
-
       <button
-        class="touchButton"
-        id="crouchButton"
+        id="crouch"
+        class="mobile-button"
         type="button"
       >
         CROUCH
       </button>
 
-
       <button
-        class="touchButton"
-        id="jumpButton"
+        id="jump"
+        class="mobile-button"
         type="button"
       >
         JUMP
       </button>
 
-    </section>
+    </div>
 
   </div>
 
+  <!-- =======================================================
+       ENTRY POINT
+       ======================================================== -->
 
-  <!-- ===================================================
-       GAME ENTRY
-       IMPORTANT: this is the ONLY script we need here.
-  ==================================================== -->
-
-  <script type="module" src="./src/main.js"></script>
+  <script
+    type="module"
+    src="./src/main.js"
+  ></script>
 
 </body>
 </html>
