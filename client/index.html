@@ -1,12 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
+  <meta charset="UTF-8" />
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-  >
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
 
   <title>LAST LINE</title>
 
@@ -22,20 +21,13 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #071018;
-      color: #eafcff;
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+      background: #05080b;
+      color: #e9f7ff;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     body {
       touch-action: none;
-      user-select: none;
     }
 
     button,
@@ -44,738 +36,499 @@
       font: inherit;
     }
 
-    /* =====================================================
-       THREE.JS GAME
-    ===================================================== */
-
     #game {
       position: fixed;
       inset: 0;
-      z-index: 1;
       overflow: hidden;
     }
 
-    #game canvas {
+    canvas {
       display: block;
       width: 100%;
       height: 100%;
     }
 
-    /* =====================================================
-       MENU
-    ===================================================== */
+    /* =========================
+       MAIN MENU
+    ========================= */
 
     #menu {
       position: fixed;
       inset: 0;
       z-index: 20;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       padding: 24px;
-
       background:
-        radial-gradient(
-          circle at 50% 40%,
-          rgba(22, 72, 86, 0.22),
-          transparent 45%
-        ),
-        linear-gradient(
-          135deg,
-          rgba(3, 9, 13, 0.97),
-          rgba(7, 16, 24, 0.94)
-        );
+        radial-gradient(circle at 50% 30%, rgba(0, 190, 255, 0.08), transparent 35%),
+        linear-gradient(135deg, #030609, #081016 55%, #030507);
     }
 
     .menuBox {
-      width: min(470px, 94vw);
-
-      padding: 38px;
-
-      border: 1px solid rgba(76, 222, 255, 0.25);
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(15, 28, 36, 0.94),
-          rgba(7, 15, 21, 0.97)
-        );
-
+      width: min(520px, 94vw);
+      padding: 34px;
+      border: 1px solid rgba(70, 220, 255, 0.28);
+      border-radius: 18px;
+      background: rgba(7, 13, 18, 0.88);
       box-shadow:
-        0 25px 80px rgba(0, 0, 0, 0.55),
-        inset 0 0 40px rgba(49, 217, 255, 0.025);
-
+        0 0 60px rgba(0, 180, 255, 0.08),
+        inset 0 0 35px rgba(255, 255, 255, 0.02);
       backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
     }
 
     .logo {
-      font-size: 58px;
-      line-height: 0.95;
+      font-size: clamp(42px, 11vw, 72px);
       font-weight: 900;
-      letter-spacing: 0.08em;
-      color: #f4fdff;
+      letter-spacing: 0.12em;
+      color: #eafaff;
+      text-shadow:
+        0 0 8px rgba(70, 220, 255, 0.65),
+        0 0 35px rgba(0, 150, 255, 0.22);
     }
 
-    .logo span {
-      color: #36e7ff;
-    }
-
-    .sub {
-      margin-top: 10px;
-      margin-bottom: 34px;
-
-      color: rgba(190, 225, 234, 0.55);
-
-      font-size: 11px;
+    .subtitle {
+      margin-top: 5px;
+      margin-bottom: 32px;
+      color: #67cbe8;
+      font-size: 12px;
+      letter-spacing: 0.25em;
       font-weight: 700;
-      letter-spacing: 0.24em;
     }
 
-    .field {
-      margin-bottom: 18px;
-    }
-
-    .field label {
+    .label {
       display: block;
-
-      margin-bottom: 8px;
-
-      color: rgba(185, 226, 235, 0.55);
-
-      font-size: 10px;
-      font-weight: 800;
+      margin: 18px 0 7px;
+      color: #72909e;
+      font-size: 11px;
       letter-spacing: 0.18em;
+      font-weight: 700;
     }
 
-    .field input,
-    .field select {
+    #callsign,
+    #mode {
       width: 100%;
-      height: 52px;
-
-      padding: 0 15px;
-
-      border: 1px solid rgba(88, 217, 240, 0.18);
-      border-radius: 3px;
-
+      height: 48px;
+      border: 1px solid rgba(100, 200, 230, 0.22);
+      border-radius: 9px;
       outline: none;
-
-      background: rgba(0, 0, 0, 0.28);
-      color: #eafcff;
-
-      font-size: 14px;
-      letter-spacing: 0.06em;
+      background: rgba(0, 0, 0, 0.32);
+      color: #eafaff;
+      padding: 0 15px;
     }
 
-    .field input:focus,
-    .field select:focus {
-      border-color: rgba(54, 231, 255, 0.6);
-      box-shadow: 0 0 0 2px rgba(54, 231, 255, 0.06);
+    #callsign:focus,
+    #mode:focus {
+      border-color: rgba(70, 220, 255, 0.65);
+      box-shadow: 0 0 18px rgba(0, 180, 255, 0.08);
     }
 
-    .field select option {
-      background: #0a151c;
+    #mode option {
+      background: #091016;
       color: white;
-    }
-
-    .actions {
-      margin-top: 26px;
     }
 
     #deployButton {
       width: 100%;
-      height: 58px;
-
-      border: 1px solid rgba(54, 231, 255, 0.7);
-      border-radius: 3px;
-
+      height: 56px;
+      margin-top: 26px;
+      border: 1px solid rgba(120, 235, 255, 0.65);
+      border-radius: 10px;
       background:
         linear-gradient(
-          135deg,
-          rgba(36, 171, 193, 0.25),
-          rgba(12, 65, 77, 0.35)
+          180deg,
+          rgba(45, 190, 230, 0.18),
+          rgba(15, 90, 115, 0.14)
         );
-
-      color: #dffcff;
-
-      font-size: 14px;
+      color: #dffaff;
+      font-size: 15px;
       font-weight: 900;
-      letter-spacing: 0.22em;
-
+      letter-spacing: 0.2em;
       cursor: pointer;
-
-      transition:
-        background 0.15s ease,
-        transform 0.15s ease,
-        box-shadow 0.15s ease;
-    }
-
-    #deployButton:hover {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(36, 201, 226, 0.42),
-          rgba(12, 83, 98, 0.48)
-        );
-
       box-shadow:
-        0 0 30px rgba(54, 231, 255, 0.12);
+        0 0 22px rgba(0, 190, 255, 0.08),
+        inset 0 0 20px rgba(50, 220, 255, 0.04);
     }
 
     #deployButton:active {
       transform: scale(0.985);
+      background: rgba(50, 190, 230, 0.25);
     }
 
     #deployButton:disabled {
-      opacity: 0.55;
-      cursor: wait;
+      opacity: 0.5;
+      cursor: default;
     }
 
     #menuStatus {
       min-height: 18px;
-
-      margin-top: 16px;
-
-      color: #63eaff;
-
+      margin-top: 15px;
       text-align: center;
-
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.16em;
+      color: #6ebbd0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
     }
 
-    /* =====================================================
+    /* =========================
        LOADING
-    ===================================================== */
+    ========================= */
 
     #loadingScreen {
       position: fixed;
       inset: 0;
-      z-index: 100;
-
+      z-index: 50;
       display: none;
-
       align-items: center;
       justify-content: center;
-
-      background:
-        radial-gradient(
-          circle,
-          rgba(13, 48, 58, 0.38),
-          rgba(3, 8, 12, 0.98)
-        );
+      background: #030608;
     }
 
     .loadingBox {
-      width: min(360px, 80vw);
+      width: min(420px, 82vw);
       text-align: center;
     }
 
     .loadingTitle {
       margin-bottom: 18px;
-
-      color: #dffcff;
-
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 0.24em;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: #7fdcf2;
+      font-weight: 800;
     }
 
     .loadingTrack {
       width: 100%;
-      height: 3px;
-
+      height: 4px;
       overflow: hidden;
-
-      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
     }
 
     #loadingProgress {
       width: 0%;
       height: 100%;
-
-      background: #36e7ff;
-
-      box-shadow:
-        0 0 14px rgba(54, 231, 255, 0.7);
-
-      transition: width 0.08s linear;
+      background: #63dcff;
+      box-shadow: 0 0 15px #63dcff;
+      transition: width 0.15s linear;
     }
 
-    /* =====================================================
+    /* =========================
        HUD
-    ===================================================== */
+    ========================= */
 
     #hud {
       position: fixed;
       inset: 0;
       z-index: 10;
-
       display: none;
-
       pointer-events: none;
     }
 
-    .hudTop {
+    .topLeft {
       position: absolute;
-
       top: 18px;
       left: 18px;
-      right: 18px;
-
-      display: flex;
-      gap: 10px;
+      min-width: 210px;
     }
 
-    .hudCard {
-      min-width: 120px;
-
-      padding: 10px 13px;
-
-      border: 1px solid rgba(91, 211, 231, 0.16);
-
-      background: rgba(4, 12, 17, 0.58);
-
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .hudSmall {
-      color: rgba(186, 227, 236, 0.45);
-
-      font-size: 8px;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-    }
-
-    .hudBig {
-      margin-top: 3px;
-
-      color: #ecfcff;
-
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-    }
-
-    #objective {
-      position: absolute;
-
-      top: 88px;
-      left: 50%;
-
-      transform: translateX(-50%);
-
-      max-width: 90vw;
-
-      padding: 8px 14px;
-
-      border: 1px solid rgba(75, 211, 234, 0.12);
-
-      background: rgba(4, 12, 17, 0.48);
-
-      color: rgba(224, 249, 255, 0.78);
-
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-
-      text-align: center;
-
-      white-space: nowrap;
-    }
-
-    /* =====================================================
-       CROSSHAIR
-    ===================================================== */
-
-    #crosshair {
-      position: absolute;
-
-      left: 50%;
-      top: 50%;
-
-      width: 18px;
-      height: 18px;
-
-      transform: translate(-50%, -50%);
-    }
-
-    #crosshair::before,
-    #crosshair::after {
-      content: "";
-
-      position: absolute;
-
-      background: rgba(226, 252, 255, 0.88);
-    }
-
-    #crosshair::before {
-      left: 8px;
-      top: 2px;
-
-      width: 2px;
-      height: 14px;
-    }
-
-    #crosshair::after {
-      left: 2px;
-      top: 8px;
-
-      width: 14px;
-      height: 2px;
-    }
-
-    /* =====================================================
-       BOTTOM HUD
-    ===================================================== */
-
-    #bottomHud {
-      position: absolute;
-
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 14px;
-    }
-
-    .hudPanel {
-      padding: 11px 14px;
-
-      border: 1px solid rgba(91, 211, 231, 0.16);
-
-      background: rgba(4, 12, 17, 0.64);
-
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    #healthPanel {
-      width: min(280px, 42vw);
-    }
-
-    .healthRow {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      margin-bottom: 7px;
-    }
-
-    #hpText {
-      color: #eaffff;
-
-      font-size: 12px;
+    .playerName {
+      color: #dffaff;
+      font-size: 14px;
       font-weight: 900;
+      letter-spacing: 0.12em;
     }
 
-    .bar {
-      width: 100%;
-      height: 5px;
-
-      background: rgba(255,255,255,0.08);
-
-      overflow: hidden;
+    #lvl {
+      margin-top: 4px;
+      color: #61cce8;
+      font-size: 11px;
+      letter-spacing: 0.15em;
     }
 
-    #hpFill {
-      width: 100%;
-      height: 100%;
-
-      background: #42e8b1;
-
-      transition: width 0.15s ease;
-    }
-
-    #weaponPanel {
-      min-width: 180px;
+    .topRight {
+      position: absolute;
+      top: 18px;
+      right: 18px;
       text-align: right;
     }
 
-    #weaponName {
-      color: rgba(187, 229, 238, 0.55);
-
-      font-size: 9px;
+    #hostiles,
+    #score {
+      color: #eafaff;
+      font-size: 13px;
       font-weight: 800;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.08em;
+    }
+
+    #xp {
+      margin-top: 4px;
+      color: #65cde8;
+      font-size: 11px;
+    }
+
+    .objectiveBox {
+      position: absolute;
+      top: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(520px, 78vw);
+      text-align: center;
+      padding: 10px 16px;
+      border-top: 1px solid rgba(90, 220, 255, 0.18);
+      border-bottom: 1px solid rgba(90, 220, 255, 0.18);
+      background: rgba(0, 10, 15, 0.28);
+      color: #b9eaf7;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    #cross {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+    }
+
+    #cross::before,
+    #cross::after {
+      content: "";
+      position: absolute;
+      background: rgba(220, 250, 255, 0.9);
+      box-shadow: 0 0 5px rgba(70, 220, 255, 0.4);
+    }
+
+    #cross::before {
+      width: 2px;
+      height: 20px;
+      left: 9px;
+      top: 0;
+    }
+
+    #cross::after {
+      height: 2px;
+      width: 20px;
+      left: 0;
+      top: 9px;
+    }
+
+    #msg {
+      position: absolute;
+      left: 50%;
+      bottom: 19%;
+      transform: translateX(-50%);
+      color: #dffaff;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-align: center;
+      text-shadow: 0 2px 8px #000;
+    }
+
+    .bottomLeft {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      width: min(280px, 45vw);
+    }
+
+    .healthTrack,
+    .xpTrack {
+      width: 100%;
+      height: 8px;
+      overflow: hidden;
+      margin-top: 6px;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #hpf,
+    #xpf {
+      width: 100%;
+      height: 100%;
+      transition: width 0.15s linear;
+    }
+
+    #hpf {
+      background: #46dc8a;
+    }
+
+    #xpf {
+      background: #5fcfff;
+    }
+
+    #hptext {
+      color: #dffaff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .weaponBox {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      text-align: right;
+    }
+
+    #wname {
+      color: #dffaff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
     }
 
     #ammo {
       margin-top: 3px;
-
-      color: #f0fdff;
-
-      font-size: 25px;
-      font-weight: 900;
-    }
-
-    #ammo span {
-      color: rgba(213, 244, 249, 0.35);
+      color: #72d5ee;
       font-size: 13px;
+      font-weight: 700;
     }
 
-    #message {
-      position: absolute;
-
-      left: 50%;
-      bottom: 27%;
-
-      transform: translateX(-50%);
-
-      color: #dffcff;
-
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-
-      text-align: center;
-
-      text-shadow:
-        0 2px 18px rgba(0,0,0,0.8);
-    }
-
-    /* =====================================================
-       MOBILE CONTROLS
-       IMPORTANT: HIDDEN UNTIL CORE DEPLOYS
-    ===================================================== */
+    /* =========================
+       MOBILE
+    ========================= */
 
     #mobile {
+      display: none;
       position: fixed;
       inset: 0;
-
-      z-index: 30;
-
-      display: none;
-
+      z-index: 15;
       pointer-events: none;
+    }
+
+    #moveArea,
+    #lookArea {
+      position: absolute;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    #moveArea {
+      left: 0;
+      bottom: 0;
+      width: 48%;
+      height: 52%;
+    }
+
+    #lookArea {
+      right: 0;
+      top: 0;
+      width: 58%;
+      height: 75%;
     }
 
     .stick {
       position: absolute;
-
-      width: 132px;
-      height: 132px;
-
+      width: 112px;
+      height: 112px;
+      border: 1px solid rgba(130, 220, 240, 0.18);
       border-radius: 50%;
-
-      border: 1px solid rgba(76, 224, 248, 0.22);
-
-      background: rgba(7, 20, 27, 0.25);
-
-      pointer-events: auto;
-
-      touch-action: none;
+      background: rgba(5, 20, 27, 0.15);
     }
 
     #moveStick {
-      left: 24px;
-      bottom: 24px;
+      left: 38px;
+      bottom: 40px;
     }
 
-    #lookStick {
-      right: 24px;
-      bottom: 24px;
-    }
-
-    .knob {
+    .stickKnob {
       position: absolute;
-
       left: 50%;
       top: 50%;
-
-      width: 54px;
-      height: 54px;
-
-      margin-left: -27px;
-      margin-top: -27px;
-
+      width: 48px;
+      height: 48px;
+      transform: translate(-50%, -50%);
       border-radius: 50%;
-
-      background: rgba(54, 231, 255, 0.2);
-
-      border: 1px solid rgba(54, 231, 255, 0.4);
-
-      box-shadow:
-        0 0 18px rgba(54, 231, 255, 0.08);
-
-      pointer-events: none;
+      border: 1px solid rgba(130, 220, 240, 0.28);
+      background: rgba(90, 210, 235, 0.12);
     }
 
     .mobileButton {
       position: absolute;
-
-      width: 68px;
-      height: 68px;
-
+      pointer-events: auto;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
-
-      border: 1px solid rgba(133, 232, 250, 0.25);
-
-      color: #e8fcff;
-
+      border: 1px solid rgba(140, 225, 245, 0.28);
+      background: rgba(5, 15, 20, 0.45);
+      color: #dffaff;
       font-size: 10px;
       font-weight: 900;
-      letter-spacing: 0.08em;
-
-      pointer-events: auto;
-
+      letter-spacing: 0.05em;
       touch-action: none;
     }
 
     #fire {
-      right: 42%;
-      bottom: 30px;
-
-      background: rgba(178, 31, 48, 0.38);
+      right: 32px;
+      bottom: 72px;
+      width: 76px;
+      height: 76px;
+      border-color: rgba(255, 110, 90, 0.4);
     }
 
     #reload {
-      right: 24px;
-      bottom: 176px;
-
-      width: 58px;
-      height: 58px;
-
-      background: rgba(255,255,255,0.08);
-    }
-
-    #crouch {
-      right: 102px;
-      bottom: 178px;
-
-      width: 54px;
-      height: 54px;
-
-      background: rgba(255,255,255,0.07);
+      right: 120px;
+      bottom: 38px;
     }
 
     #sprint {
-      left: 175px;
-      bottom: 34px;
+      left: 160px;
+      bottom: 42px;
+    }
 
-      width: 58px;
-      height: 58px;
-
-      background: rgba(255,255,255,0.07);
+    #crouch {
+      left: 160px;
+      bottom: 112px;
     }
 
     #jump {
-      right: 102px;
-      bottom: 30px;
-
-      width: 54px;
-      height: 54px;
-
-      background: rgba(255,255,255,0.07);
+      right: 120px;
+      bottom: 118px;
     }
 
-    /* =====================================================
-       DESKTOP
-    ===================================================== */
-
-    @media (pointer: fine) {
+    /* Only reveal mobile gameplay controls after the game starts. */
+    @media (pointer: coarse) {
       #mobile {
-        display: none !important;
+        display: none;
       }
     }
 
-    /* =====================================================
-       PHONE
-    ===================================================== */
-
     @media (max-width: 700px) {
       .menuBox {
-        padding: 27px;
+        padding: 25px 20px;
       }
 
       .logo {
         font-size: 48px;
       }
 
-      .sub {
-        font-size: 9px;
+      .objectiveBox {
+        top: 74px;
+        width: 90vw;
+        font-size: 10px;
       }
 
-      .hudTop {
-        top: 10px;
-        left: 10px;
-        right: 10px;
+      .topLeft {
+        top: 12px;
+        left: 12px;
       }
 
-      .hudCard {
-        min-width: 0;
-        flex: 1;
-        padding: 8px 9px;
+      .topRight {
+        top: 12px;
+        right: 12px;
       }
 
-      .hudTop .hudCard:nth-child(2) {
-        display: none;
-      }
-
-      #objective {
-        top: 75px;
-        font-size: 8px;
-      }
-
-      #bottomHud {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-      }
-
-      #healthPanel {
+      .bottomLeft {
+        left: 12px;
+        bottom: 12px;
         width: 42vw;
       }
 
-      #weaponPanel {
-        min-width: 0;
-      }
-
-      .stick {
-        width: 124px;
-        height: 124px;
-      }
-
-      #moveStick {
-        left: 16px;
-        bottom: 16px;
-      }
-
-      #lookStick {
-        right: 16px;
-        bottom: 16px;
-      }
-
-      #fire {
-        right: 35%;
-        bottom: 20px;
-      }
-
-      #reload {
-        right: 15px;
-        bottom: 158px;
-      }
-
-      #crouch {
-        right: 88px;
-        bottom: 158px;
-      }
-
-      #jump {
-        right: 88px;
-        bottom: 18px;
-      }
-
-      #sprint {
-        left: 154px;
-        bottom: 22px;
+      .weaponBox {
+        right: 12px;
+        bottom: 12px;
       }
     }
   </style>
@@ -783,100 +536,74 @@
 
 <body>
 
-  <!-- =====================================================
-       THREE.JS CANVAS CONTAINER
-  ====================================================== -->
-
   <div id="game"></div>
 
-
-  <!-- =====================================================
+  <!-- =========================
        MAIN MENU
-  ====================================================== -->
+  ========================= -->
 
-  <div id="menu">
-
+  <section id="menu">
     <div class="menuBox">
 
-      <div class="logo">
-        LAST <span>LINE</span>
-      </div>
+      <div class="logo">LAST LINE</div>
 
-      <div class="sub">
+      <div class="subtitle">
         TACTICAL CO-OP OPERATIONS
       </div>
 
+      <label class="label" for="callsign">
+        CALLSIGN
+      </label>
 
-      <div class="field">
+      <input
+        id="callsign"
+        type="text"
+        maxlength="18"
+        autocomplete="off"
+        value="Phantom"
+        placeholder="Enter callsign"
+      />
 
-        <label for="callsign">
-          CALLSIGN
-        </label>
+      <label class="label" for="mode">
+        OPERATION
+      </label>
 
-        <input
-          id="callsign"
-          value="Phantom"
-          maxlength="16"
-          autocomplete="off"
-          spellcheck="false"
-        >
+      <select id="mode">
 
+        <option value="rescue">
+          RESCUE THE HOSTAGE
+        </option>
+
+        <option value="survival">
+          SURVIVAL
+        </option>
+
+        <option value="tdm">
+          TEAM DEATHMATCH
+        </option>
+
+        <option value="hvt">
+          HIGH VALUE TARGET
+        </option>
+
+      </select>
+
+      <button id="deployButton">
+        DEPLOY
+      </button>
+
+      <div id="menuStatus">
+        READY FOR DEPLOYMENT
       </div>
-
-
-      <div class="field">
-
-        <label for="mode">
-          OPERATION
-        </label>
-
-        <select id="mode">
-
-          <option value="rescue">
-            RESCUE THE HOSTAGE
-          </option>
-
-          <option value="survival">
-            SURVIVAL
-          </option>
-
-          <option value="tdm">
-            TEAM DEATHMATCH
-          </option>
-
-          <option value="hvt">
-            HIGH VALUE TARGET
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="actions">
-
-        <button
-          id="deployButton"
-          type="button"
-        >
-          DEPLOY
-        </button>
-
-      </div>
-
-
-      <div id="menuStatus"></div>
 
     </div>
+  </section>
 
-  </div>
-
-
-  <!-- =====================================================
+  <!-- =========================
        LOADING SCREEN
-  ====================================================== -->
+  ========================= -->
 
-  <div id="loadingScreen">
+  <section id="loadingScreen">
 
     <div class="loadingBox">
 
@@ -885,209 +612,147 @@
       </div>
 
       <div class="loadingTrack">
-
         <div id="loadingProgress"></div>
-
       </div>
 
     </div>
 
-  </div>
+  </section>
 
-
-  <!-- =====================================================
+  <!-- =========================
        HUD
-  ====================================================== -->
+  ========================= -->
 
-  <div id="hud">
+  <section id="hud">
 
-    <div class="hudTop">
+    <div class="topLeft">
 
-      <div class="hudCard">
-
-        <div class="hudSmall">
-          CALLSIGN
-        </div>
-
-        <div
-          class="hudBig"
-          id="hudName"
-        >
-          Phantom
-        </div>
-
+      <div class="playerName" id="hudName">
+        PHANTOM
       </div>
 
-
-      <div class="hudCard">
-
-        <div class="hudSmall">
-          SCORE
-        </div>
-
-        <div
-          class="hudBig"
-          id="score"
-        >
-          0
-        </div>
-
-      </div>
-
-
-      <div class="hudCard">
-
-        <div class="hudSmall">
-          HOSTILES
-        </div>
-
-        <div
-          class="hudBig"
-          id="enemies"
-        >
-          0
-        </div>
-
+      <div id="lvl">
+        LEVEL 1
       </div>
 
     </div>
 
+    <div class="topRight">
 
-    <div id="objective">
-      OPERATION READY
-    </div>
-
-
-    <div id="crosshair"></div>
-
-
-    <div id="message"></div>
-
-
-    <div id="bottomHud">
-
-      <div
-        class="hudPanel"
-        id="healthPanel"
-      >
-
-        <div class="healthRow">
-
-          <div class="hudSmall">
-            VITALS
-          </div>
-
-          <div id="hpText">
-            100
-          </div>
-
-        </div>
-
-        <div class="bar">
-
-          <div id="hpFill"></div>
-
-        </div>
-
+      <div id="hostiles">
+        HOSTILES: 0
       </div>
 
+      <div id="score">
+        SCORE: 0
+      </div>
 
-      <div
-        class="hudPanel"
-        id="weaponPanel"
-      >
-
-        <div id="weaponName">
-          PRIMARY
-        </div>
-
-        <div id="ammo">
-          30
-          <span>/ 120</span>
-        </div>
-
+      <div id="xp">
+        XP: 0
       </div>
 
     </div>
 
-  </div>
+    <div class="objectiveBox" id="objective">
+      OBJECTIVE: DEPLOY
+    </div>
 
+    <div id="cross"></div>
 
-  <!-- =====================================================
+    <div id="msg"></div>
+
+    <div class="bottomLeft">
+
+      <div id="hptext">
+        HP 100
+      </div>
+
+      <div class="healthTrack">
+        <div id="hpf"></div>
+      </div>
+
+      <div class="xpTrack">
+        <div id="xpf"></div>
+      </div>
+
+    </div>
+
+    <div class="weaponBox">
+
+      <div id="wname">
+        CARBINE
+      </div>
+
+      <div id="ammo">
+        30 / 120
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
        MOBILE CONTROLS
-       CORE WILL SHOW THIS AFTER DEPLOY
-  ====================================================== -->
+  ========================= -->
 
-  <div id="mobile">
+  <section id="mobile">
 
-    <div
-      class="stick"
-      id="moveStick"
-    >
-      <div class="knob"></div>
+    <div id="moveArea">
+
+      <div id="moveStick" class="stick">
+        <div class="stickKnob"></div>
+      </div>
+
     </div>
 
-
-    <div
-      class="stick"
-      id="lookStick"
-    >
-      <div class="knob"></div>
-    </div>
-
+    <div id="lookArea"></div>
 
     <button
-      class="mobileButton"
       id="fire"
-      type="button"
+      class="mobileButton"
     >
       FIRE
     </button>
 
-
     <button
-      class="mobileButton"
       id="reload"
-      type="button"
+      class="mobileButton"
     >
-      R
+      RELOAD
     </button>
 
-
     <button
-      class="mobileButton"
-      id="crouch"
-      type="button"
-    >
-      CROUCH
-    </button>
-
-
-    <button
-      class="mobileButton"
       id="sprint"
-      type="button"
+      class="mobileButton"
     >
       RUN
     </button>
 
+    <button
+      id="crouch"
+      class="mobileButton"
+    >
+      CROUCH
+    </button>
 
     <button
-      class="mobileButton"
       id="jump"
-      type="button"
+      class="mobileButton"
     >
       JUMP
     </button>
 
-  </div>
+  </section>
 
+  <!-- IMPORTANT:
+       This is the ONLY game script.
+       Do not keep the old giant inline Three.js script below it.
+  -->
 
-  <!-- =====================================================
-       MODULAR GAME ENTRY
-  ====================================================== -->
-
-  <script type="module" src="./src/main.js"></script>
+  <script
+    type="module"
+    src="./src/main.js"
+  ></script>
 
 </body>
 </html>
