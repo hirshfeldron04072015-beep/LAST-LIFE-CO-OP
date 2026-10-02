@@ -1,0 +1,325 @@
+export class LevelHUD {
+  constructor(options = {}) {
+    this.root = options.root || document.body;
+
+    this.element = null;
+    this.levelElement = null;
+    this.xpText = null;
+    this.xpFill = null;
+    this.rankElement = null;
+
+    this.level = 1;
+    this.xp = 0;
+    this.xpRequired = 100;
+
+    this.build();
+  }
+
+  build() {
+    this.element = document.createElement("div");
+    this.element.id = "level-hud";
+
+    Object.assign(this.element.style, {
+      position: "fixed",
+      left: "22px",
+      bottom: "22px",
+      zIndex: "120",
+      width: "190px",
+      padding: "10px 12px",
+      boxSizing: "border-box",
+      color: "#ffffff",
+      fontFamily: "Arial, Helvetica, sans-serif",
+      pointerEvents: "none",
+      userSelect: "none",
+      textShadow: "0 2px 5px rgba(0,0,0,.9)",
+      background: "rgba(5,8,10,.34)",
+      borderLeft: "2px solid rgba(220,225,228,.7)"
+    });
+
+    // Rank
+    this.rankElement =
+      document.createElement("div");
+
+    Object.assign(this.rankElement.style, {
+      fontSize: "9px",
+      fontWeight: "800",
+      letterSpacing: "2px",
+      color: "#8e999f",
+      marginBottom: "3px"
+    });
+
+    this.rankElement.textContent =
+      "OPERATIVE";
+
+    this.element.appendChild(
+      this.rankElement
+    );
+
+    // Level
+    const levelRow =
+      document.createElement("div");
+
+    Object.assign(levelRow.style, {
+      display: "flex",
+      alignItems: "baseline",
+      justifyContent: "space-between",
+      marginBottom: "7px"
+    });
+
+    this.levelElement =
+      document.createElement("div");
+
+    Object.assign(this.levelElement.style, {
+      fontSize: "19px",
+      fontWeight: "900",
+      letterSpacing: "1px"
+    });
+
+    this.levelElement.textContent =
+      "LEVEL 1";
+
+    levelRow.appendChild(
+      this.levelElement
+    );
+
+    this.xpText =
+      document.createElement("div");
+
+    Object.assign(this.xpText.style, {
+      fontSize: "9px",
+      color: "#89949b",
+      letterSpacing: "1px"
+    });
+
+    this.xpText.textContent =
+      "0 / 100 XP";
+
+    levelRow.appendChild(
+      this.xpText
+    );
+
+    this.element.appendChild(
+      levelRow
+    );
+
+    // XP bar
+    const xpBar =
+      document.createElement("div");
+
+    Object.assign(xpBar.style, {
+      width: "100%",
+      height: "4px",
+      background: "rgba(255,255,255,.12)",
+      overflow: "hidden"
+    });
+
+    this.xpFill =
+      document.createElement("div");
+
+    Object.assign(this.xpFill.style, {
+      width: "0%",
+      height: "100%",
+      background: "#d7dde0",
+      transition: "width .2s ease"
+    });
+
+    xpBar.appendChild(
+      this.xpFill
+    );
+
+    this.element.appendChild(
+      xpBar
+    );
+
+    this.root.appendChild(
+      this.element
+    );
+  }
+
+  update(data = {}) {
+    if (!data) return;
+
+    if (data.level !== undefined) {
+      this.setLevel(data.level);
+    }
+
+    if (data.xp !== undefined) {
+      this.xp = Math.max(
+        0,
+        Number(data.xp) || 0
+      );
+    }
+
+    if (data.xpRequired !== undefined) {
+      this.xpRequired = Math.max(
+        1,
+        Number(data.xpRequired) || 1
+      );
+    }
+
+    if (data.rank !== undefined) {
+      this.setRank(data.rank);
+    }
+
+    this.refresh();
+  }
+
+  setLevel(level) {
+    this.level = Math.max(
+      1,
+      Math.floor(Number(level) || 1)
+    );
+
+    this.refresh();
+  }
+
+  setXP(xp, required = this.xpRequired) {
+    this.xp = Math.max(
+      0,
+      Number(xp) || 0
+    );
+
+    this.xpRequired = Math.max(
+      1,
+      Number(required) || 1
+    );
+
+    this.refresh();
+  }
+
+  addXP(amount) {
+    const value =
+      Math.max(0, Number(amount) || 0);
+
+    this.xp += value;
+
+    this.refresh();
+
+    return this.xp;
+  }
+
+  setRank(rank) {
+    this.rankElement.textContent =
+      String(rank || "OPERATIVE")
+        .toUpperCase();
+  }
+
+  refresh() {
+    if (!this.levelElement) return;
+
+    this.levelElement.textContent =
+      `LEVEL ${this.level}`;
+
+    this.xpText.textContent =
+      `${Math.floor(this.xp)} / ${Math.floor(
+        this.xpRequired
+      )} XP`;
+
+    const progress =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          (this.xp / this.xpRequired) * 100
+        )
+      );
+
+    this.xpFill.style.width =
+      `${progress}%`;
+  }
+
+  levelUp(level, xpRequired) {
+    this.level = Math.max(
+      1,
+      Math.floor(Number(level) || 1)
+    );
+
+    this.xp = 0;
+
+    if (xpRequired !== undefined) {
+      this.xpRequired = Math.max(
+        1,
+        Number(xpRequired) || 1
+      );
+    }
+
+    this.refresh();
+
+    this.showLevelUp();
+  }
+
+  showLevelUp() {
+    const popup =
+      document.createElement("div");
+
+    popup.textContent =
+      `LEVEL ${this.level}`;
+
+    Object.assign(popup.style, {
+      position: "fixed",
+      left: "50%",
+      top: "38%",
+      transform: "translate(-50%, -50%)",
+      zIndex: "500",
+      color: "#ffffff",
+      fontFamily:
+        "Arial, Helvetica, sans-serif",
+      fontSize: "32px",
+      fontWeight: "900",
+      letterSpacing: "5px",
+      textShadow:
+        "0 3px 12px rgba(0,0,0,.9)",
+      pointerEvents: "none",
+      opacity: "0",
+      transition:
+        "opacity .2s ease, transform .45s ease"
+    });
+
+    document.body.appendChild(
+      popup
+    );
+
+    requestAnimationFrame(() => {
+      popup.style.opacity = "1";
+      popup.style.transform =
+        "translate(-50%, -50%) scale(1.05)";
+    });
+
+    setTimeout(() => {
+      popup.style.opacity = "0";
+      popup.style.transform =
+        "translate(-50%, -50%) scale(1)";
+    }, 900);
+
+    setTimeout(() => {
+      popup.remove();
+    }, 1250);
+  }
+
+  show() {
+    this.element.style.display =
+      "block";
+  }
+
+  hide() {
+    this.element.style.display =
+      "none";
+  }
+
+  reset() {
+    this.level = 1;
+    this.xp = 0;
+    this.xpRequired = 100;
+
+    this.setRank("OPERATIVE");
+    this.refresh();
+  }
+
+  destroy() {
+    if (this.element) {
+      this.element.remove();
+    }
+
+    this.element = null;
+  }
+}
