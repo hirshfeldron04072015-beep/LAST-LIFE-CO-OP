@@ -1,2572 +1,391 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>LAST LINE</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05080c;color:#fff;font-family:Arial,sans-serif;touch-action:none}
-canvas{position:fixed;inset:0;display:block}
-button,input,select{font:inherit}
-#ui{position:fixed;inset:0;z-index:5;pointer-events:none}
-#menu{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:auto;background:radial-gradient(circle at 50% 35%,#23d2f01f,transparent 35%),#060a0f}
-.box{width:min(570px,92vw);padding:34px;background:#080e15f5;border:1px solid #46dcff59;box-shadow:0 25px 80px #000b}
-.logo{text-align:center;font-size:50px;font-weight:900;letter-spacing:.12em}
-.logo span{color:#35e7ff}
-.sub{text-align:center;margin:12px 0 25px;color:#35e7ff;font-size:11px;letter-spacing:.25em}
-.field{margin:11px 0}
-label{display:block;color:#89949e;font-size:10px;letter-spacing:.14em;margin-bottom:6px}
-input,select{width:100%;padding:13px;background:#0b121a;color:#fff;border:1px solid #263643;border-radius:7px}
-button{border:1px solid #40515c;background:#101923;color:#fff;padding:13px;border-radius:7px;font-weight:800}
-#deploy{width:100%;margin-top:8px;background:#1f6679;border-color:#35e7ff;font-size:17px;letter-spacing:.16em}
-.status{text-align:center;color:#35e7ff;font-size:11px;min-height:16px;margin-top:10px}
-#hud{display:none;position:absolute;inset:0}
-.top{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:7px}
-.card{padding:7px 10px;background:#050a0fcc;border:1px solid #ffffff1b}
-.small{font-size:8px;color:#89949e;letter-spacing:.12em}
-.big{font-size:15px;font-weight:900}
-#xp{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:min(290px,42vw);text-align:center;font-size:9px;color:#b9c8d0}
-.bar{height:7px;background:#15202a;border:1px solid #30414d;border-radius:5px;overflow:hidden}
-.fill{height:100%;width:0;background:#35e7ff}
-#objective{position:absolute;top:68px;left:50%;transform:translateX(-50%);padding:7px 11px;background:#050a0fcc;border:1px solid #35e7ff44;font-size:10px;white-space:nowrap}
-#cross{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%)}
-#cross:before,#cross:after{content:"";position:absolute;background:#fff}
-#cross:before{width:2px;height:22px;left:10px}
-#cross:after{height:2px;width:22px;top:10px}
-#msg{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);font-weight:900;font-size:20px;letter-spacing:.12em;color:#35e7ff;text-shadow:0 2px 15px #000;opacity:0;white-space:nowrap}
-#health{position:absolute;left:15px;bottom:18px;width:220px}
-.row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
-.healthbar{height:11px;background:#251318;border:1px solid #74404b;border-radius:5px;overflow:hidden}
-.healthfill{height:100%;width:100%;background:#e84b61}
-#weapon{position:absolute;right:15px;bottom:15px;text-align:right}
-.wname{font-weight:900;font-size:17px}
-.ammo{font-size:26px;font-weight:900}
-.ammo span{font-size:12px;color:#89949e}
-#mobile{display:none;position:absolute;inset:0;pointer-events:none}
-.stick{position:absolute;bottom:24px;width:120px;height:120px;border-radius:50%;background:#ffffff0a;border:1px solid #ffffff20;pointer-events:auto}
-.stick .knob{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px;border-radius:50%;background:#35e7ff33;border:1px solid #35e7ff66}
-.move{left:18px}
-.look{right:18px}
-.mb{position:absolute;width:64px;height:64px;border-radius:50%;padding:0;pointer-events:auto}
-.fire{right:37%;bottom:38px;background:#ff325566}
-.reload{right:18px;bottom:160px;background:#fff2}
-.swap{right:95px;bottom:160px;background:#35e7ff22}
-@media(pointer:coarse){
-  #mobile{display:none}
-}
-@media(max-width:700px){
-  .box{padding:24px}
-  .logo{font-size:42px}
-  #xp{top:55px;width:48vw}
-  .top .card:nth-child(2){display:none}
-}
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             maximum-scale=1,
+             user-scalable=no,
+             viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#080b0d">
+
+  <title>LAST LINE</title>
+
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/menu.css">
+  <link rel="stylesheet" href="./styles/hud.css">
+  <link rel="stylesheet" href="./styles/mobile.css">
 </head>
 
 <body>
 
-<div id="ui">
+  <!-- =====================================================
+       GAME
+       ===================================================== -->
 
-<div id="menu">
-<div class="box">
+  <main id="game">
+    <!-- Three.js canvas is created by main.js -->
+  </main>
 
-<div class="logo">
-LAST <span>LINE</span>
-</div>
 
-<div class="sub">
-TACTICAL CO-OP OPERATIONS
-</div>
+  <!-- =====================================================
+       MAIN MENU
+       ===================================================== -->
 
-<div class="field">
-<label>CALLSIGN</label>
-<input id="callsign" value="Phantom" maxlength="16">
-</div>
+  <section id="menu">
 
-<div class="field">
-<label>OPERATION</label>
+    <div class="menu-background"></div>
 
-<select id="mode">
-<option value="rescue">RESCUE THE HOSTAGE</option>
-<option value="survival">SURVIVAL</option>
-<option value="tdm">TEAM DEATHMATCH</option>
-<option value="hvt">HIGH VALUE TARGET</option>
-</select>
+    <div class="menu-panel">
 
-</div>
+      <div class="game-logo">
+        LAST LINE
+      </div>
 
-<button id="deploy">
-DEPLOY
-</button>
+      <div class="game-subtitle">
+        TACTICAL OPERATIONS
+      </div>
 
-<div id="status" class="status"></div>
+      <div class="menu-divider"></div>
 
-</div>
-</div>
+      <label for="callsign">
+        CALLSIGN
+      </label>
 
+      <input
+        id="callsign"
+        type="text"
+        maxlength="16"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="ENTER CALLSIGN"
+      >
 
-<div id="hud">
+      <button
+        id="deployButton"
+        type="button"
+      >
+        DEPLOY
+      </button>
 
-<div class="top">
+      <div id="menuStatus">
+        SYSTEM READY
+      </div>
 
-<div class="card">
-<div class="small">CALLSIGN</div>
-<div class="big" id="name">Phantom</div>
-</div>
+    </div>
 
-<div class="card">
-<div class="small">LEVEL</div>
-<div class="big" id="lvl">1</div>
-</div>
+  </section>
 
-<div class="card">
-<div class="small">HOSTILES</div>
-<div class="big" id="hostiles">0</div>
-</div>
 
-</div>
+  <!-- =====================================================
+       HUD
+       ===================================================== -->
 
+  <section
+    id="hud"
+    aria-hidden="true"
+  >
 
-<div id="xp">
-XP 0 / 100
-<div class="bar">
-<div id="xpf" class="fill"></div>
-</div>
-</div>
+    <!-- Crosshair -->
 
+    <div id="crosshair">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
 
-<div id="objective">
-RESCUE THE HOSTAGE
-</div>
 
-<div id="cross"></div>
+    <!-- Top objective -->
 
-<div id="msg"></div>
+    <div id="objectiveHud">
 
+      <div class="hud-label">
+        OBJECTIVE
+      </div>
 
-<div id="health">
+      <div id="objectiveText">
+        WAITING FOR DEPLOYMENT
+      </div>
 
-<div class="row">
-<span>HEALTH</span>
-<span id="hptext">100</span>
-</div>
+    </div>
 
-<div class="healthbar">
-<div id="hpf" class="healthfill"></div>
-</div>
 
-</div>
+    <!-- Player status -->
 
+    <div id="playerHud">
 
-<div id="weapon">
+      <div class="hud-label">
+        HEALTH
+      </div>
 
-<div id="wname" class="wname">
-CARBINE
-</div>
+      <div class="status-row">
 
-<div id="ammo" class="ammo">
-30 <span>/ 120</span>
-</div>
+        <div class="status-bar">
+          <div
+            id="healthBar"
+            class="status-fill"
+          ></div>
+        </div>
 
-</div>
+        <div id="healthText">
+          100
+        </div>
 
-</div>
+      </div>
 
 
-<div id="mobile">
+      <div class="hud-label armor-label">
+        ARMOR
+      </div>
 
-<div id="move" class="stick move">
-<div class="knob"></div>
-</div>
+      <div class="status-row">
 
-<div id="look" class="stick look">
-<div class="knob"></div>
-</div>
+        <div class="status-bar">
+          <div
+            id="armorBar"
+            class="status-fill"
+          ></div>
+        </div>
 
-<button id="fire" class="mb fire">
-FIRE
-</button>
+        <div id="armorText">
+          100
+        </div>
 
-<button id="reload" class="mb reload">
-R
-</button>
+      </div>
 
-<button id="swap" class="mb swap">
-W
-</button>
+    </div>
 
-</div>
 
-</div>
+    <!-- Weapon / ammo -->
 
+    <div id="weaponHud">
 
-<script type="module">
+      <div id="weaponName">
+        CARBINE
+      </div>
 
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+      <div id="ammoText">
+        <span id="currentAmmo">
+          30
+        </span>
 
+        <span class="ammo-divider">
+          /
+        </span>
 
-/* =========================
-SCENE
-========================= */
+        <span id="reserveAmmo">
+          120
+        </span>
+      </div>
 
-const S =
-new THREE.Scene();
+      <div id="reloadIndicator">
+        RELOAD
+      </div>
 
-S.background =
-new THREE.Color(0x071018);
+    </div>
 
-S.fog =
-new THREE.FogExp2(
-0x071018,
-.012
-);
 
+    <!-- Level / XP -->
 
-const C =
-new THREE.PerspectiveCamera(
-68,
-innerWidth/innerHeight,
-.05,
-500
-);
+    <div id="levelHud">
 
-C.position.set(
-0,
-1.7,
-18
-);
+      <div>
+        LEVEL
+        <span id="levelText">
+          1
+        </span>
+      </div>
 
+      <div class="xp-bar">
 
-const R =
-new THREE.WebGLRenderer({
-antialias:true,
-powerPreference:"high-performance"
-});
+        <div
+          id="xpBar"
+          class="xp-fill"
+        ></div>
 
-R.setPixelRatio(
-Math.min(
-devicePixelRatio,
-1.3
-)
-);
+      </div>
 
-R.setSize(
-innerWidth,
-innerHeight
-);
+      <div id="xpText">
+        0 / 100 XP
+      </div>
 
-R.outputColorSpace =
-THREE.SRGBColorSpace;
+    </div>
 
-R.shadowMap.enabled = true;
 
-R.shadowMap.type =
-THREE.PCFSoftShadowMap;
+    <!-- Mission notification -->
 
-document.body.prepend(
-R.domElement
-);
+    <div id="missionNotification">
+      <div id="missionNotificationTitle"></div>
+      <div id="missionNotificationText"></div>
+    </div>
 
 
-/* =========================
-LIGHTING
-========================= */
+    <!-- Damage vignette -->
 
-S.add(
-new THREE.HemisphereLight(
-0xa8dcff,
-0x172018,
-1.4
-)
-);
+    <div id="damageVignette"></div>
 
 
-const sun =
-new THREE.DirectionalLight(
-0xffffff,
-2.1
-);
+    <!-- Hit marker -->
 
-sun.position.set(
-30,
-50,
-20
-);
+    <div id="hitMarker">
+      ×
+    </div>
 
-sun.castShadow = true;
+  </section>
 
-sun.shadow.mapSize.set(
-1024,
-1024
-);
 
-sun.shadow.camera.left = -75;
-sun.shadow.camera.right = 75;
-sun.shadow.camera.top = 75;
-sun.shadow.camera.bottom = -75;
+  <!-- =====================================================
+       MOBILE FPS CONTROLS
+       ===================================================== -->
 
-S.add(sun);
+  <section id="mobileControls">
 
+    <!-- Left movement joystick -->
 
-/* =========================
-GROUPS
-========================= */
+    <div
+      id="movementJoystick"
+      class="touch-control"
+    >
 
-const world =
-new THREE.Group();
+      <div
+        id="movementJoystickKnob"
+      ></div>
 
-const enemies =
-new THREE.Group();
+    </div>
 
-const allies =
-new THREE.Group();
 
-const props =
-new THREE.Group();
+    <!-- Right side is the camera/look area -->
 
-const fx =
-new THREE.Group();
+    <div
+      id="lookArea"
+      class="touch-control"
+    ></div>
 
-S.add(
-world,
-enemies,
-allies,
-props,
-fx
-);
 
+    <!-- Fire -->
 
-/* =========================
-PROCEDURAL TEXTURES
-========================= */
+    <button
+      id="shootButton"
+      class="mobile-button shoot-button"
+      type="button"
+    >
+      FIRE
+    </button>
 
-function tex(
-draw,
-w=256,
-h=256
-){
 
-const c =
-document.createElement(
-"canvas"
-);
+    <!-- Reload -->
 
-c.width = w;
-c.height = h;
+    <button
+      id="reloadButton"
+      class="mobile-button reload-button"
+      type="button"
+    >
+      R
+    </button>
 
-const x =
-c.getContext("2d");
 
-draw(x,w,h);
+    <!-- Crouch -->
 
-const t =
-new THREE.CanvasTexture(c);
+    <button
+      id="crouchButton"
+      class="mobile-button crouch-button"
+      type="button"
+    >
+      C
+    </button>
 
-t.colorSpace =
-THREE.SRGBColorSpace;
 
-t.wrapS =
-t.wrapT =
-THREE.RepeatWrapping;
+    <!-- Sprint -->
 
-return t;
-}
+    <button
+      id="sprintButton"
+      class="mobile-button sprint-button"
+      type="button"
+    >
+      SPRINT
+    </button>
 
 
-const concrete =
-tex((x,w,h)=>{
+    <!-- Jump -->
 
-x.fillStyle="#555b5d";
-x.fillRect(
-0,
-0,
-w,
-h
-);
+    <button
+      id="jumpButton"
+      class="mobile-button jump-button"
+      type="button"
+    >
+      JUMP
+    </button>
 
-for(
-let i=0;
-i<1800;
-i++
-){
 
-let v =
-55+Math.random()*55;
+    <!-- Weapon switching -->
 
-x.fillStyle =
-`rgb(${v},${v+2},${v+3})`;
+    <div id="weaponButtons">
 
-x.fillRect(
-Math.random()*w,
-Math.random()*h,
-1+Math.random()*4,
-1+Math.random()*4
-);
+      <button
+        id="weapon1Button"
+        class="weapon-button"
+        type="button"
+      >
+        1
+      </button>
 
-}
+      <button
+        id="weapon2Button"
+        class="weapon-button"
+        type="button"
+      >
+        2
+      </button>
 
-},256,256);
+      <button
+        id="weapon3Button"
+        class="weapon-button"
+        type="button"
+      >
+        3
+      </button>
 
+    </div>
 
-const asphalt =
-tex((x,w,h)=>{
+  </section>
 
-x.fillStyle="#20262a";
 
-x.fillRect(
-0,
-0,
-w,
-h
-);
+  <!-- =====================================================
+       LOADING SCREEN
+       ===================================================== -->
 
-for(
-let i=0;
-i<3000;
-i++
-){
+  <section id="loadingScreen">
 
-let v =
-22+Math.random()*38;
+    <div class="loading-panel">
 
-x.fillStyle =
-`rgb(${v},${v},${v+2})`;
+      <div class="loading-title">
+        LAST LINE
+      </div>
 
-x.fillRect(
-Math.random()*w,
-Math.random()*h,
-1+Math.random()*2,
-1+Math.random()*2
-);
+      <div class="loading-text">
+        INITIALIZING OPERATIONS
+      </div>
 
-}
+      <div class="loading-bar">
+        <div id="loadingProgress"></div>
+      </div>
 
-},512,512);
+    </div>
 
-asphalt.repeat.set(
-9,
-9
-);
+  </section>
 
 
-const metal =
-tex((x,w,h)=>{
+  <!-- =====================================================
+       GAME SCRIPTS
+       ===================================================== -->
 
-x.fillStyle="#26343b";
-
-x.fillRect(
-0,
-0,
-w,
-h
-);
-
-for(
-let i=0;
-i<32;
-i++
-){
-
-x.fillStyle =
-i%2 ?
-"#304149" :
-"#1d2930";
-
-x.fillRect(
-i*8,
-0,
-4,
-h
-);
-
-}
-
-for(
-let i=0;
-i<250;
-i++
-){
-
-x.fillStyle="#fff1";
-
-x.fillRect(
-Math.random()*w,
-Math.random()*h,
-2,
-1
-);
-
-}
-
-},256,256);
-
-metal.repeat.set(
-2,
-2
-);
-
-
-/* =========================
-MATERIALS
-========================= */
-
-const M = {
-
-ground:
-new THREE.MeshStandardMaterial({
-map:asphalt,
-roughness:.95
-}),
-
-con:
-new THREE.MeshStandardMaterial({
-map:concrete,
-roughness:.9
-}),
-
-metal:
-new THREE.MeshStandardMaterial({
-map:metal,
-metalness:.4,
-roughness:.72
-}),
-
-dark:
-new THREE.MeshStandardMaterial({
-color:0x151b1e
-}),
-
-red:
-new THREE.MeshStandardMaterial({
-color:0x3b2025,
-map:metal
-}),
-
-blue:
-new THREE.MeshStandardMaterial({
-color:0x263e49,
-map:metal
-}),
-
-green:
-new THREE.MeshStandardMaterial({
-color:0x354630,
-map:metal
-}),
-
-skin:
-new THREE.MeshStandardMaterial({
-color:0x9b715f
-}),
-
-enemy:
-new THREE.MeshStandardMaterial({
-color:0x24292d
-}),
-
-armor:
-new THREE.MeshStandardMaterial({
-color:0x3b4347,
-metalness:.2
-}),
-
-glow:
-new THREE.MeshStandardMaterial({
-color:0x00dfff,
-emissive:0x006b77,
-emissiveIntensity:1.8
-})
-
-};
-
-
-/* =========================
-HELPERS
-========================= */
-
-function addBox(
-group,
-x,y,z,
-px,py,pz,
-mat=M.con
-){
-
-const m =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-x,y,z
-),
-mat
-);
-
-m.position.set(
-px,
-py,
-pz
-);
-
-m.castShadow = true;
-m.receiveShadow = true;
-
-group.add(m);
-
-return m;
-
-}
-
-
-/* =========================
-GROUND
-========================= */
-
-const gnd =
-new THREE.Mesh(
-new THREE.PlaneGeometry(
-150,
-150
-),
-M.ground
-);
-
-gnd.rotation.x =
--Math.PI/2;
-
-gnd.receiveShadow = true;
-
-world.add(gnd);
-
-
-/* =========================
-WALLS
-========================= */
-
-addBox(
-world,
-150,7,2,
-0,3.5,-72
-);
-
-addBox(
-world,
-150,7,2,
-0,3.5,72
-);
-
-addBox(
-world,
-2,7,150,
--72,3.5,0
-);
-
-addBox(
-world,
-2,7,150,
-72,3.5,0
-);
-
-
-/* =========================
-ROAD MARKINGS
-========================= */
-
-const line =
-new THREE.MeshBasicMaterial({
-color:0xd8cf98
-});
-
-for(
-let z=-63;
-z<=63;
-z+=7
-){
-
-const a =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-.2,
-.015,
-3.5
-),
-line
-);
-
-a.position.set(
-0,
-.01,
-z
-);
-
-world.add(a);
-
-}
-
-
-/* =========================
-WAREHOUSES
-========================= */
-
-function warehouse(
-x,z,w,d
-){
-
-addBox(
-world,
-w,
-7,
-d,
-x,
-3.5,
-z,
-M.metal
-);
-
-for(
-let xx=x-w/2+2;
-xx<x+w/2;
-xx+=3
-){
-
-addBox(
-props,
-.12,
-6,
-.12,
-xx,
-3,
-z-d/2-.12,
-M.dark
-);
-
-}
-
-const door =
-addBox(
-props,
-w*.28,
-.05,
-.05,
-x,
-3.2,
-z-d/2-.35,
-M.glow
-);
-
-door.castShadow=false;
-
-}
-
-warehouse(
--35,
--35,
-27,
-18
-);
-
-warehouse(
-35,
--30,
-25,
-20
-);
-
-warehouse(
--38,
-35,
-23,
-18
-);
-
-warehouse(
-38,
-35,
-25,
-20
-);
-
-
-/* =========================
-CONTAINERS
-========================= */
-
-function container(
-x,z,r,mat
-){
-
-const q =
-new THREE.Group();
-
-addBox(
-q,
-11,
-3.1,
-2.8,
-0,
-0,
-0,
-mat
-);
-
-for(
-let i=-4.5;
-i<=4.5;
-i+=1.5
-){
-
-addBox(
-q,
-.07,
-2.8,
-.07,
-i,
-0,
-0,
-M.dark
-);
-
-}
-
-q.position.set(
-x,
-1.55,
-z
-);
-
-q.rotation.y =
-r;
-
-props.add(q);
-
-}
-
-
-container(
--12,
--39,
-0,
-M.blue
-);
-
-container(
-12,
--39,
-0,
-M.red
-);
-
-container(
--12,
-39,
-0,
-M.green
-);
-
-container(
-12,
-39,
-0,
-M.blue
-);
-
-container(
--30,
--8,
-Math.PI/2,
-M.green
-);
-
-container(
-30,
-8,
-Math.PI/2,
-M.red
-);
-
-
-/* =========================
-EXTRACTION
-========================= */
-
-const extract =
-new THREE.Mesh(
-new THREE.CylinderGeometry(
-5,
-5,
-.15,
-32
-),
-M.glow
-);
-
-extract.position.set(
-0,
-.08,
--57
-);
-
-world.add(extract);
-
-
-const ring =
-new THREE.Mesh(
-new THREE.TorusGeometry(
-5.5,
-.12,
-8,
-32
-),
-M.glow
-);
-
-ring.rotation.x =
-Math.PI/2;
-
-ring.position.set(
-0,
-.15,
--57
-);
-
-world.add(ring);
-
-
-/* =========================
-GAME STATE
-========================= */
-
-let running=false;
-let mode="rescue";
-
-let hp=100;
-
-let level=1;
-let xp=0;
-let score=0;
-let wave=0;
-
-let ammo=30;
-let reserve=120;
-
-let wi=0;
-
-let lastShot=0;
-
-let fireHeld=false;
-
-let mx=0;
-let my=0;
-
-let lx=0;
-let ly=0;
-
-let yaw=0;
-let pitch=0;
-
-let hostage;
-let rescued=false;
-
-
-/* =========================
-WEAPONS
-========================= */
-
-const guns=[
-
-{
-name:"CARBINE",
-mag:30,
-res:120,
-dmg:50,
-rate:180
-},
-
-{
-name:"SMG",
-mag:40,
-res:160,
-dmg:28,
-rate:90
-},
-
-{
-name:"DMR",
-mag:12,
-res:72,
-dmg:90,
-rate:360
-}
-
-];
-
-
-/* =========================
-HOSTAGE
-========================= */
-
-function makeHostage(){
-
-if(hostage)
-props.remove(hostage);
-
-hostage =
-new THREE.Group();
-
-
-const b =
-new THREE.Mesh(
-new THREE.CapsuleGeometry(
-.38,
-.8,
-4,
-8
-),
-new THREE.MeshStandardMaterial({
-color:0x536878
-})
-);
-
-b.position.y=1;
-
-hostage.add(b);
-
-
-const h =
-new THREE.Mesh(
-new THREE.SphereGeometry(
-.27,
-12,
-8
-),
-M.skin
-);
-
-h.position.y=1.7;
-
-hostage.add(h);
-
-
-const vest =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-.75,
-.4,
-.45
-),
-new THREE.MeshStandardMaterial({
-color:0xc4aa58
-})
-);
-
-vest.position.y=1.2;
-
-hostage.add(vest);
-
-
-hostage.position.set(
-0,
-0,
--42
-);
-
-props.add(hostage);
-
-}
-
-makeHostage();
-
-
-/* =========================
-ENEMY SOLDIER
-========================= */
-
-function enemy(
-elite=false
-){
-
-const q =
-new THREE.Group();
-
-
-const torso =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-.72,
-1.05,
-.42
-),
-M.enemy
-);
-
-torso.position.y=1.15;
-
-q.add(torso);
-
-
-const armor =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-.82,
-.55,
-.47
-),
-M.armor
-);
-
-armor.position.y=1.32;
-
-q.add(armor);
-
-
-const head =
-new THREE.Mesh(
-new THREE.SphereGeometry(
-.28,
-12,
-8
-),
-M.skin
-);
-
-head.position.y=1.9;
-
-q.add(head);
-
-
-const helmet =
-new THREE.Mesh(
-new THREE.SphereGeometry(
-.31,
-12,
-8,
-0,
-6.28,
-0,
-1.57
-),
-M.dark
-);
-
-helmet.position.y=2.02;
-
-q.add(helmet);
-
-
-const la =
-new THREE.Mesh(
-new THREE.CapsuleGeometry(
-.12,
-.62,
-4,
-6
-),
-M.armor
-);
-
-const ra =
-la.clone();
-
-const ll =
-new THREE.Mesh(
-new THREE.CapsuleGeometry(
-.14,
-.72,
-4,
-6
-),
-M.dark
-);
-
-const rl =
-ll.clone();
-
-
-la.position.set(
--.48,
-1.2,
-0
-);
-
-ra.position.set(
-.48,
-1.2,
-0
-);
-
-ll.position.set(
--.2,
-.48,
-0
-);
-
-rl.position.set(
-.2,
-.48,
-0
-);
-
-q.add(
-la,
-ra,
-ll,
-rl
-);
-
-
-q.userData={
-
-hp:
-elite ? 180 : 100,
-
-speed:
-elite ?
-1.0 :
-1.25+Math.random()*.55,
-
-phase:
-Math.random()*6.28,
-
-la,
-ra,
-ll,
-rl,
-
-elite
-
-};
-
-
-let a =
-Math.random()*6.28;
-
-let r =
-28+Math.random()*28;
-
-q.position.set(
-Math.cos(a)*r,
-0,
-Math.sin(a)*r
-);
-
-q.castShadow=true;
-
-enemies.add(q);
-
-}
-
-
-/* =========================
-TEAMMATE
-========================= */
-
-function ally(){
-
-const q =
-new THREE.Group();
-
-
-const torso =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-.7,
-1,
-.42
-),
-new THREE.MeshStandardMaterial({
-color:0x315b72
-})
-);
-
-torso.position.y=1.1;
-
-q.add(torso);
-
-
-const head =
-new THREE.Mesh(
-new THREE.SphereGeometry(
-.27,
-10,
-8
-),
-M.skin
-);
-
-head.position.y=1.85;
-
-q.add(head);
-
-
-const helmet =
-new THREE.Mesh(
-new THREE.SphereGeometry(
-.3,
-10,
-8,
-0,
-6.28,
-0,
-1.57
-),
-new THREE.MeshStandardMaterial({
-color:0x16394b
-})
-);
-
-helmet.position.y=1.98;
-
-q.add(helmet);
-
-
-q.position.set(
-(Math.random()-.5)*18,
-0,
-20+Math.random()*10
-);
-
-q.userData={
-speed:1.15,
-phase:Math.random()*6.28
-};
-
-allies.add(q);
-
-}
-
-
-function spawnAllies(){
-
-while(
-allies.children.length
-)
-allies.remove(
-allies.children[0]
-);
-
-for(
-let i=0;
-i<4;
-i++
-)
-ally();
-
-}
-
-
-/* =========================
-WAVES
-========================= */
-
-function waveSpawn(){
-
-wave++;
-
-let n;
-
-if(
-mode==="rescue"
-)
-n=3+wave;
-
-else if(
-mode==="tdm"
-)
-n=7;
-
-else
-n=5+wave*2;
-
-
-for(
-let i=0;
-i<n;
-i++
-){
-
-enemy(
-wave%4===0 &&
-i===0
-);
-
-}
-
-
-obj(
-
-mode==="rescue"
-?
-(
-rescued ?
-"REACH EXTRACTION" :
-"RESCUE THE HOSTAGE"
-)
-
-:
-
-mode==="tdm"
-?
-"TEAM DEATHMATCH — FIRST TO 10 KILLS"
-
-:
-
-"SURVIVE WAVE "+wave
-
-);
-
-hud();
-
-}
-
-
-/* =========================
-XP
-========================= */
-
-function gain(n){
-
-xp+=n;
-
-while(
-xp>=level*100
-){
-
-xp-=level*100;
-
-level++;
-
-msg(
-"LEVEL "+level+" UNLOCKED"
-);
-
-}
-
-hud();
-
-}
-
-
-/* =========================
-RELOAD
-========================= */
-
-function reload(){
-
-let w=
-guns[wi];
-
-if(
-ammo>=w.mag ||
-reserve<=0
-)
-return;
-
-let n =
-Math.min(
-w.mag-ammo,
-reserve
-);
-
-ammo+=n;
-
-reserve-=n;
-
-hud();
-
-}
-
-
-/* =========================
-SWITCH WEAPON
-========================= */
-
-function swap(){
-
-guns[wi].mag=ammo;
-
-guns[wi].res=reserve;
-
-wi =
-(wi+1) %
-guns.length;
-
-ammo =
-guns[wi].mag;
-
-reserve =
-guns[wi].res;
-
-msg(
-guns[wi].name
-);
-
-hud();
-
-}
-
-
-/* =========================
-SHOOT
-========================= */
-
-function shoot(){
-
-if(!running)
-return;
-
-let w=
-guns[wi];
-
-let n=
-performance.now();
-
-if(
-n-lastShot <
-w.rate
-)
-return;
-
-if(
-ammo<=0
-){
-
-reload();
-
-return;
-
-}
-
-ammo--;
-
-lastShot=n;
-
-
-let ray =
-new THREE.Raycaster();
-
-ray.setFromCamera(
-new THREE.Vector2(
-0,
-0
-),
-C
-);
-
-
-let hit =
-ray.intersectObjects(
-enemies.children,
-true
-)[0];
-
-
-if(hit){
-
-let o =
-hit.object;
-
-while(
-o.parent &&
-o.parent!==enemies
-){
-
-o=o.parent;
-
-}
-
-
-if(
-o.parent===enemies
-){
-
-o.userData.hp -=
-w.dmg;
-
-
-if(
-o.userData.hp<=0
-){
-
-enemies.remove(o);
-
-score +=
-o.userData.elite ?
-300 :
-100;
-
-gain(
-o.userData.elite ?
-50 :
-25
-);
-
-
-if(
-mode==="tdm" &&
-score>=1000
-){
-
-running=false;
-
-msg(
-"TEAM DEATHMATCH VICTORY"
-);
-
-setTimeout(
-()=>location.reload(),
-1800
-);
-
-}
-
-else if(
-!enemies.children.length
-){
-
-setTimeout(
-waveSpawn,
-700
-);
-
-}
-
-}
-
-}
-
-}
-
-hud();
-
-}
-
-
-/* =========================
-PLAYER DAMAGE
-========================= */
-
-function damage(n){
-
-hp =
-Math.max(
-0,
-hp-n
-);
-
-hud();
-
-if(
-hp<=0
-){
-
-running=false;
-
-msg(
-"MISSION FAILED"
-);
-
-setTimeout(
-()=>location.reload(),
-1600
-);
-
-}
-
-}
-
-
-/* =========================
-OBJECTIVES
-========================= */
-
-function obj(t){
-
-document.getElementById(
-"objective"
-).textContent=t;
-
-}
-
-
-function msg(t){
-
-let e =
-document.getElementById(
-"msg"
-);
-
-e.textContent=t;
-
-e.style.opacity=1;
-
-clearTimeout(
-msg.t
-);
-
-msg.t=setTimeout(
-()=>{
-e.style.opacity=0;
-},
-1300
-);
-
-}
-
-
-/* =========================
-HUD
-========================= */
-
-function hud(){
-
-let w=
-guns[wi];
-
-document.getElementById(
-"lvl"
-).textContent=
-level;
-
-document.getElementById(
-"hostiles"
-).textContent=
-enemies.children.length;
-
-document.getElementById(
-"hptext"
-).textContent=
-Math.round(hp);
-
-document.getElementById(
-"hpf"
-).style.width=
-hp+"%";
-
-
-document.getElementById(
-"xp"
-).childNodes[0]
-.nodeValue=
-`XP ${xp} / ${level*100} `;
-
-
-document.getElementById(
-"xpf"
-).style.width=
-Math.min(
-100,
-xp/(level*100)*100
-)+"%";
-
-
-document.getElementById(
-"wname"
-).textContent=
-w.name;
-
-
-document.getElementById(
-"ammo"
-).innerHTML=
-`${ammo} <span>/ ${reserve}</span>`;
-
-}
-
-
-/* =========================
-RESCUE
-========================= */
-
-function rescue(){
-
-if(
-mode!=="rescue" ||
-rescued
-)
-return;
-
-if(
-hostage &&
-hostage.position.distanceTo(
-C.position
-)<4
-){
-
-rescued=true;
-
-gain(100);
-
-score+=500;
-
-msg(
-"HOSTAGE SECURED"
-);
-
-obj(
-"REACH EXTRACTION"
-);
-
-}
-
-}
-
-
-function extractCheck(){
-
-if(
-mode==="rescue" &&
-rescued &&
-C.position.distanceTo(
-extract.position
-)<6
-){
-
-running=false;
-
-gain(200);
-
-msg(
-"MISSION COMPLETE"
-);
-
-setTimeout(
-()=>location.reload(),
-1800
-);
-
-}
-
-}
-
-
-/* =========================
-DEPLOY
-========================= */
-
-function deploy(){
-
-if(running)
-return;
-
-mode =
-document.getElementById(
-"mode"
-).value;
-
-
-document.getElementById(
-"name"
-).textContent=
-document.getElementById(
-"callsign"
-).value.trim()
-||
-"Phantom";
-
-
-running=true;
-
-hp=100;
-level=1;
-xp=0;
-score=0;
-wave=0;
-rescued=false;
-wi=0;
-ammo=30;
-reserve=120;
-
-
-while(
-enemies.children.length
-)
-enemies.remove(
-enemies.children[0]
-);
-
-
-while(
-allies.children.length
-)
-allies.remove(
-allies.children[0]
-);
-
-
-makeHostage();
-
-
-C.position.set(
-0,
-1.7,
-18
-);
-
-yaw=0;
-pitch=0;
-
-
-document.getElementById(
-"menu"
-).style.display=
-"none";
-
-
-document.getElementById(
-"hud"
-).style.display=
-"block";
-
-
-document.getElementById(
-"mobile"
-).style.display=
-"block";
-
-
-if(
-mode==="tdm"
-)
-spawnAllies();
-
-
-waveSpawn();
-
-hud();
-
-}
-
-
-document.getElementById(
-"deploy"
-).addEventListener(
-"click",
-deploy
-);
-
-
-document.getElementById(
-"deploy"
-).addEventListener(
-"touchend",
-e=>{
-e.preventDefault();
-deploy();
-},
-{passive:false}
-);
-
-
-/* =========================
-TOUCH STICKS
-========================= */
-
-function stick(
-id,
-cb
-){
-
-let e =
-document.getElementById(id);
-
-let k =
-e.querySelector(".knob");
-
-let on=false;
-
-
-function mv(a){
-
-if(!on)
-return;
-
-let r =
-e.getBoundingClientRect();
-
-let x =
-a.clientX -
-(r.left+r.width/2);
-
-let y =
-a.clientY -
-(r.top+r.height/2);
-
-let m =
-r.width/2-27;
-
-let d =
-Math.hypot(x,y);
-
-
-if(
-d>m
-){
-
-x=x/d*m;
-y=y/d*m;
-
-}
-
-
-k.style.transform=
-`translate(${x}px,${y}px)`;
-
-cb(
-x/m,
-y/m
-);
-
-}
-
-
-function end(){
-
-on=false;
-
-k.style.transform=
-"translate(0,0)";
-
-cb(0,0);
-
-}
-
-
-e.addEventListener(
-"pointerdown",
-a=>{
-on=true;
-e.setPointerCapture(
-a.pointerId
-);
-mv(a);
-}
-);
-
-e.addEventListener(
-"pointermove",
-mv
-);
-
-e.addEventListener(
-"pointerup",
-end
-);
-
-e.addEventListener(
-"pointercancel",
-end
-);
-
-}
-
-
-stick(
-"move",
-(x,y)=>{
-mx=x;
-my=y;
-}
-);
-
-
-stick(
-"look",
-(x,y)=>{
-lx=x;
-ly=y;
-}
-);
-
-
-/* =========================
-BUTTONS
-========================= */
-
-document.getElementById(
-"fire"
-).addEventListener(
-"touchstart",
-e=>{
-e.preventDefault();
-fireHeld=true;
-shoot();
-},
-{passive:false}
-);
-
-
-document.getElementById(
-"fire"
-).addEventListener(
-"touchend",
-e=>{
-e.preventDefault();
-fireHeld=false;
-},
-{passive:false}
-);
-
-
-document.getElementById(
-"reload"
-).addEventListener(
-"touchstart",
-e=>{
-e.preventDefault();
-reload();
-},
-{passive:false}
-);
-
-
-document.getElementById(
-"swap"
-).addEventListener(
-"touchstart",
-e=>{
-e.preventDefault();
-swap();
-},
-{passive:false}
-);
-
-
-/* =========================
-KEYBOARD
-========================= */
-
-const keys={};
-
-
-addEventListener(
-"keydown",
-e=>{
-
-keys[e.code]=true;
-
-if(
-e.code==="KeyR"
-)
-reload();
-
-if(
-e.code==="KeyQ"
-)
-swap();
-
-}
-);
-
-
-addEventListener(
-"keyup",
-e=>{
-keys[e.code]=false;
-}
-);
-
-
-addEventListener(
-"mousedown",
-e=>{
-if(
-e.button===0
-){
-
-fireHeld=true;
-shoot();
-
-}
-}
-);
-
-
-addEventListener(
-"mouseup",
-e=>{
-if(
-e.button===0
-)
-fireHeld=false;
-}
-);
-
-
-/* =========================
-UPDATE
-========================= */
-
-function update(dt){
-
-if(!running)
-return;
-
-
-/* VERY SLOW IPAD MOVEMENT */
-
-let speed =
-1.05*dt;
-
-
-let forward =
-new THREE.Vector3(
-Math.sin(yaw),
-0,
-Math.cos(yaw)
-);
-
-
-let right =
-new THREE.Vector3(
-Math.cos(yaw),
-0,
--Math.sin(yaw)
-);
-
-
-C.position.addScaledVector(
-forward,
--my*speed
-);
-
-
-C.position.addScaledVector(
-right,
-mx*speed
-);
-
-
-if(keys.KeyW)
-C.position.addScaledVector(
-forward,
--speed
-);
-
-
-if(keys.KeyS)
-C.position.addScaledVector(
-forward,
-speed
-);
-
-
-if(keys.KeyA)
-C.position.addScaledVector(
-right,
--speed
-);
-
-
-if(keys.KeyD)
-C.position.addScaledVector(
-right,
-speed
-);
-
-
-/* VERY LOW CAMERA SENSITIVITY */
-
-yaw -=
-lx*dt*.34;
-
-pitch -=
-ly*dt*.25;
-
-
-pitch =
-Math.max(
--.7,
-Math.min(
-.7,
-pitch
-)
-);
-
-
-C.rotation.order=
-"YXZ";
-
-C.rotation.y=
-yaw;
-
-C.rotation.x=
-pitch;
-
-
-/* ENEMY ANIMATION */
-
-for(
-const e of enemies.children
-){
-
-let dx =
-C.position.x -
-e.position.x;
-
-let dz =
-C.position.z -
-e.position.z;
-
-let d =
-Math.hypot(
-dx,
-dz
-);
-
-
-if(
-d>2.3
-){
-
-e.position.x +=
-dx/d *
-e.userData.speed *
-dt;
-
-e.position.z +=
-dz/d *
-e.userData.speed *
-dt;
-
-}
-
-
-e.rotation.y =
-Math.atan2(
-dx,
-dz
-);
-
-
-let s =
-Math.sin(
-performance.now()*.01+
-e.userData.phase
-)*.38;
-
-
-e.userData.ll.rotation.x=s;
-
-e.userData.rl.rotation.x=-s;
-
-e.userData.la.rotation.x=
--s*.5;
-
-e.userData.ra.rotation.x=
-s*.5;
-
-
-if(
-d<2.8 &&
-Math.random()<dt*.18
-)
-damage(
-e.userData.elite ?
-9 :
-5
-);
-
-}
-
-
-/* TEAMMATES */
-
-if(
-mode==="tdm"
-){
-
-for(
-const a of allies.children
-){
-
-let target =
-enemies.children[0];
-
-if(!target)
-continue;
-
-
-let dx =
-target.position.x -
-a.position.x;
-
-let dz =
-target.position.z -
-a.position.z;
-
-let d =
-Math.hypot(
-dx,
-dz
-);
-
-
-if(
-d>7
-){
-
-a.position.x +=
-dx/d *
-a.userData.speed *
-dt;
-
-a.position.z +=
-dz/d *
-a.userData.speed *
-dt;
-
-}
-
-else if(
-Math.random()<dt*.45
-){
-
-target.userData.hp -=
-20;
-
-
-if(
-target.userData.hp<=0
-){
-
-enemies.remove(
-target
-);
-
-score+=100;
-
-gain(25);
-
-}
-
-}
-
-
-a.rotation.y =
-Math.atan2(
-dx,
-dz
-);
-
-
-a.position.y =
-Math.sin(
-performance.now()*.008+
-a.userData.phase
-)*.015;
-
-}
-
-}
-
-
-/* TDM ENEMY RESPAWN */
-
-if(
-mode==="tdm" &&
-enemies.children.length===0
-)
-waveSpawn();
-
-
-/* HOSTAGE */
-
-if(
-hostage &&
-!rescued
-)
-hostage.rotation.y +=
-dt*.25;
-
-
-/* EXTRACTION */
-
-ring.rotation.z +=
-dt*.7;
-
-
-extract.material
-.emissiveIntensity =
-1.4+
-Math.sin(
-performance.now()*.004
-)*.5;
-
-
-rescue();
-
-extractCheck();
-
-
-if(fireHeld)
-shoot();
-
-}
-
-
-/* =========================
-MAIN LOOP
-========================= */
-
-let last =
-performance.now();
-
-
-function loop(){
-
-requestAnimationFrame(
-loop
-);
-
-
-let n =
-performance.now();
-
-
-let dt =
-Math.min(
-(n-last)/1000,
-.05
-);
-
-
-last=n;
-
-update(dt);
-
-R.render(
-S,
-C
-);
-
-}
-
-
-loop();
-
-
-/* =========================
-RESIZE
-========================= */
-
-addEventListener(
-"resize",
-()=>{
-
-C.aspect =
-innerWidth/
-innerHeight;
-
-C.updateProjectionMatrix();
-
-R.setSize(
-innerWidth,
-innerHeight
-);
-
-}
-);
-
-</script>
+  <script type="module" src="./src/main.js"></script>
 
 </body>
 </html>
