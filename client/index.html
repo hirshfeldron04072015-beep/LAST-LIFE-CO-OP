@@ -1,90 +1,1401 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 
-  <title>LAST LINE</title>
+<title>LAST LINE</title>
 
-  <link rel="stylesheet" href="./styles/game.css" />
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#05080c;
+  color:white;
+  font-family:Arial,Helvetica,sans-serif;
+  touch-action:none;
+}
+
+canvas{
+  display:block;
+  position:fixed;
+  inset:0;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+#ui{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+}
+
+/* MENU */
+
+#menu{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(35,210,240,.12),transparent 35%),
+    #060a0f;
+}
+
+.menuBox{
+  width:min(525px,90vw);
+  padding:42px;
+  border:1px solid rgba(70,220,255,.35);
+  background:rgba(8,14,21,.94);
+  box-shadow:0 25px 80px rgba(0,0,0,.55);
+}
+
+.logo{
+  text-align:center;
+  font-size:52px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.logo span{
+  color:#35e7ff;
+}
+
+.sub{
+  text-align:center;
+  margin:18px 0 35px;
+  color:#35e7ff;
+  font-size:12px;
+  letter-spacing:.28em;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+label{
+  display:block;
+  margin-bottom:7px;
+  color:#89949e;
+  font-size:10px;
+  letter-spacing:.15em;
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  color:white;
+  background:#0b121a;
+  border:1px solid #263643;
+  border-radius:8px;
+  outline:none;
+}
+
+.actions{
+  margin-top:18px;
+}
+
+button{
+  border:1px solid #334754;
+  background:#101923;
+  color:white;
+  padding:15px;
+  border-radius:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+#deploy{
+  width:100%;
+  background:#1f6679;
+  border:1px solid #35e7ff;
+  font-size:17px;
+  letter-spacing:.18em;
+}
+
+#deploy:active{
+  transform:scale(.98);
+  background:#2b8298;
+}
+
+.status{
+  min-height:18px;
+  margin-top:16px;
+  text-align:center;
+  color:#35e7ff;
+  font-size:11px;
+}
+
+/* HUD */
+
+#hud{
+  display:none;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.top{
+  position:absolute;
+  top:14px;
+  left:14px;
+  right:14px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.card{
+  padding:9px 13px;
+  background:rgba(5,10,15,.75);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.small{
+  color:#89949e;
+  font-size:9px;
+  letter-spacing:.13em;
+}
+
+.big{
+  font-size:17px;
+  font-weight:900;
+}
+
+#objective{
+  position:absolute;
+  left:50%;
+  top:85px;
+  transform:translateX(-50%);
+  padding:9px 14px;
+  background:rgba(5,10,15,.75);
+  border:1px solid rgba(53,231,255,.3);
+  font-size:11px;
+}
+
+#crosshair{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:24px;
+  height:24px;
+  transform:translate(-50%,-50%);
+}
+
+#crosshair:before,
+#crosshair:after{
+  content:"";
+  position:absolute;
+  background:white;
+}
+
+#crosshair:before{
+  width:2px;
+  height:24px;
+  left:11px;
+}
+
+#crosshair:after{
+  height:2px;
+  width:24px;
+  top:11px;
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  top:42%;
+  transform:translate(-50%,-50%);
+  color:#35e7ff;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-align:center;
+  opacity:0;
+}
+
+/* MOBILE */
+
+#mobile{
+  display:none;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.stick{
+  position:absolute;
+  bottom:30px;
+  width:135px;
+  height:135px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);
+  pointer-events:auto;
+}
+
+#moveStick{
+  left:25px;
+}
+
+#lookStick{
+  right:25px;
+}
+
+.knob{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:55px;
+  height:55px;
+  margin:-27.5px;
+  border-radius:50%;
+  background:rgba(53,231,255,.25);
+  border:1px solid rgba(53,231,255,.45);
+}
+
+.mobileButton{
+  position:absolute;
+  pointer-events:auto;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  padding:0;
+}
+
+#fire{
+  right:43%;
+  bottom:48px;
+  background:rgba(255,50,80,.4);
+}
+
+#reload{
+  right:25px;
+  bottom:180px;
+  width:58px;
+  height:58px;
+  background:rgba(255,255,255,.12);
+}
+
+@media(pointer:coarse){
+  #mobile{
+    display:block;
+  }
+}
+
+@media(max-width:700px){
+  .menuBox{
+    padding:27px;
+  }
+
+  .logo{
+    font-size:48px;
+  }
+
+  .top .card:nth-child(2){
+    display:none;
+  }
+}
+</style>
 </head>
 
 <body>
+
+<div id="ui">
+
   <div id="menu">
-    <div class="menu-card">
-      <div class="logo">LAST LINE</div>
-      <div class="subtitle">TACTICAL CO-OP OPERATIONS</div>
 
-      <input id="callsign" placeholder="CALLSIGN" maxlength="16" />
+    <div class="menuBox">
 
-      <select id="mission-select">
-        <option value="tdm">TEAM DEATHMATCH</option>
-        <option value="hostage">HOSTAGE RESCUE</option>
-        <option value="hvt">HIGH VALUE TARGET</option>
-        <option value="survival">SURVIVAL</option>
-      </select>
+      <div class="logo">
+        LAST <span>LINE</span>
+      </div>
 
-      <button id="deploy">DEPLOY</button>
+      <div class="sub">
+        TACTICAL CO-OP OPERATIONS
+      </div>
 
-      <div id="menu-status"></div>
+      <div class="field">
+        <label>CALLSIGN</label>
+        <input id="callsign" value="Phantom" maxlength="16">
+      </div>
+
+      <div class="field">
+        <label>OPERATION</label>
+        <select id="mode">
+          <option value="survival">SURVIVAL</option>
+          <option value="tdm">TEAM DEATHMATCH</option>
+          <option value="hvt">HIGH VALUE TARGET</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button id="deploy">DEPLOY</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
     </div>
+
   </div>
 
-  <div id="hud" class="hidden">
-    <div class="hud-top">
-      <div>
-        <b>LAST LINE</b>
-        <span id="mission-name"></span>
+
+  <div id="hud">
+
+    <div class="top">
+
+      <div class="card">
+        <div class="small">CALLSIGN</div>
+        <div class="big" id="hudName">Phantom</div>
       </div>
 
-      <div id="objective"></div>
-    </div>
-
-    <div id="kill-feed"></div>
-
-    <div id="crosshair">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <div id="damage"></div>
-
-    <div id="weapon-hud">
-      <div id="weapon-name">VANGUARD AR</div>
-      <div>
-        <span id="ammo">30</span>
-        <span class="slash">/</span>
-        <span id="reserve">120</span>
+      <div class="card">
+        <div class="small">SCORE</div>
+        <div class="big" id="score">0</div>
       </div>
-    </div>
 
-    <div id="health-hud">
-      <div class="health-label">HP</div>
-      <div class="health-bar">
-        <div id="health-fill"></div>
+      <div class="card">
+        <div class="small">HOSTILES</div>
+        <div class="big" id="enemies">0</div>
       </div>
-      <div id="health-number">100</div>
+
     </div>
 
-    <div id="mission-voice">
-      <div class="mission-voice-box">
-        <div id="mission-speaker">COMMAND</div>
-        <div id="mission-text"></div>
-      </div>
+    <div id="objective">
+      SURVIVE THE WAVE
     </div>
 
-    <div id="mobile-controls">
-      <button id="mobile-fire">FIRE</button>
-      <button id="mobile-reload">RELOAD</button>
-      <button id="mobile-switch">SWITCH</button>
-    </div>
+    <div id="crosshair"></div>
+
+    <div id="message"></div>
+
   </div>
 
-  <script type="module" src="./src/main.js"></script>
+
+  <div id="mobile">
+
+    <div class="stick" id="moveStick">
+      <div class="knob"></div>
+    </div>
+
+    <div class="stick" id="lookStick">
+      <div class="knob"></div>
+    </div>
+
+    <button class="mobileButton" id="fire">
+      FIRE
+    </button>
+
+    <button class="mobileButton" id="reload">
+      R
+    </button>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+
+/* =========================================================
+   BASIC SETUP
+========================================================= */
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x071018);
+
+scene.fog = new THREE.FogExp2(
+  0x071018,
+  0.018
+);
+
+
+const camera = new THREE.PerspectiveCamera(
+  70,
+  innerWidth / innerHeight,
+  0.05,
+  500
+);
+
+camera.position.set(0,1.7,12);
+
+
+const renderer = new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
+
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,1.5)
+);
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.outputColorSpace =
+  THREE.SRGBColorSpace;
+
+document.body.prepend(
+  renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHTING
+========================================================= */
+
+scene.add(
+  new THREE.HemisphereLight(
+    0x9eeaff,
+    0x152018,
+    1.7
+  )
+);
+
+const sun =
+  new THREE.DirectionalLight(
+    0xffffff,
+    2
+  );
+
+sun.position.set(
+  30,
+  50,
+  20
+);
+
+scene.add(sun);
+
+
+/* =========================================================
+   GROUPS
+========================================================= */
+
+const world =
+  new THREE.Group();
+
+const enemies =
+  new THREE.Group();
+
+const effects =
+  new THREE.Group();
+
+scene.add(world);
+scene.add(enemies);
+scene.add(effects);
+
+
+/* =========================================================
+   MATERIALS
+========================================================= */
+
+function material(color){
+
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness:.8
+  });
+
+}
+
+const groundMat =
+  material(0x26312c);
+
+const wallMat =
+  material(0x4d575a);
+
+const enemyMat =
+  material(0xc43b4b);
+
+const accentMat =
+  material(0x00a9c2);
+
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+const ground =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      130,
+      1,
+      130
+    ),
+    groundMat
+  );
+
+ground.position.y = -.5;
+
+world.add(ground);
+
+
+function box(
+  x,y,z,
+  px,py,pz,
+  mat = wallMat
+){
+
+  const m =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        x,y,z
+      ),
+      mat
+    );
+
+  m.position.set(
+    px,py,pz
+  );
+
+  world.add(m);
+
+  return m;
+
+}
+
+
+/* arena walls */
+
+box(130,8,2,0,4,-65);
+box(130,8,2,0,4,65);
+box(2,8,130,-65,4,0);
+box(2,8,130,65,4,0);
+
+
+/* cover */
+
+box(8,4,3,-18,2,-12);
+box(8,4,3,18,2,-12);
+
+box(5,3,5,-25,1.5,15);
+box(5,3,5,25,1.5,15);
+
+box(12,3,2,0,1.5,-28);
+box(12,3,2,0,1.5,28);
+
+
+/* extraction pad */
+
+const extraction =
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      4,4,.15,32
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x00dfff,
+      emissive:0x005566,
+      emissiveIntensity:1
+    })
+  );
+
+extraction.position.set(
+  0,.08,-48
+);
+
+world.add(extraction);
+
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let running = false;
+let score = 0;
+let wave = 0;
+let kills = 0;
+let ammo = 30;
+let reserve = 120;
+
+let fireHeld = false;
+
+let moveX = 0;
+let moveY = 0;
+
+let lookX = 0;
+let lookY = 0;
+
+let yaw = 0;
+let pitch = 0;
+
+let lastShot = 0;
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+function createEnemy(){
+
+  const g =
+    new THREE.Group();
+
+  const body =
+    new THREE.Mesh(
+      new THREE.CapsuleGeometry(
+        .45,
+        .9,
+        4,
+        8
+      ),
+      enemyMat
+    );
+
+  body.position.y = 1;
+
+  g.add(body);
+
+
+  const head =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .28,
+        10,
+        8
+      ),
+      material(0x8e6a5d)
+    );
+
+  head.position.y = 1.72;
+
+  g.add(head);
+
+
+  const light =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .06,
+        8,
+        6
+      ),
+      new THREE.MeshBasicMaterial({
+        color:0xff304f
+      })
+    );
+
+  light.position.set(
+    0,
+    1.72,
+    .25
+  );
+
+  g.add(light);
+
+
+  const a =
+    Math.random() *
+    Math.PI * 2;
+
+  const r =
+    25 + Math.random()*25;
+
+  g.position.set(
+    Math.cos(a)*r,
+    0,
+    Math.sin(a)*r
+  );
+
+
+  g.userData.hp = 100;
+  g.userData.speed =
+    1.1 + Math.random()*.8;
+
+  enemies.add(g);
+
+}
+
+
+/* =========================================================
+   SPAWN WAVE
+========================================================= */
+
+function spawnWave(){
+
+  wave++;
+
+  const count =
+    5 + wave * 2;
+
+  for(let i=0;i<count;i++){
+    createEnemy();
+  }
+
+  document.getElementById(
+    "objective"
+  ).textContent =
+    "SURVIVE WAVE " + wave;
+
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearEnemies(){
+
+  while(enemies.children.length){
+
+    enemies.remove(
+      enemies.children[0]
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   DEPLOY
+========================================================= */
+
+function deploy(){
+
+  if(running) return;
+
+  const name =
+    document.getElementById(
+      "callsign"
+    ).value.trim() || "Phantom";
+
+  document.getElementById(
+    "hudName"
+  ).textContent = name;
+
+  score = 0;
+  kills = 0;
+  wave = 0;
+  ammo = 30;
+  reserve = 120;
+
+  clearEnemies();
+
+  camera.position.set(
+    0,
+    1.7,
+    12
+  );
+
+  yaw = 0;
+  pitch = 0;
+
+  running = true;
+
+  document.getElementById(
+    "menu"
+  ).style.display = "none";
+
+  document.getElementById(
+    "hud"
+  ).style.display = "block";
+
+  document.getElementById(
+    "status"
+  ).textContent = "";
+
+  spawnWave();
+
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   DIRECT TOUCH CLICK HANDLER
+========================================================= */
+
+document
+  .getElementById("deploy")
+  .addEventListener(
+    "click",
+    deploy
+  );
+
+document
+  .getElementById("deploy")
+  .addEventListener(
+    "touchend",
+    function(e){
+
+      e.preventDefault();
+
+      deploy();
+
+    },
+    {passive:false}
+  );
+
+
+/* =========================================================
+   SHOOT
+========================================================= */
+
+function shoot(){
+
+  if(!running) return;
+
+  const now =
+    performance.now();
+
+  if(now-lastShot < 180)
+    return;
+
+  if(ammo <= 0){
+
+    reloadWeapon();
+
+    return;
+
+  }
+
+  if(
+    reserve <= 0
+  ){
+
+    return;
+
+  }
+
+  lastShot = now;
+
+  ammo--;
+
+
+  const ray =
+    new THREE.Raycaster();
+
+  ray.setFromCamera(
+    new THREE.Vector2(0,0),
+    camera
+  );
+
+
+  const hits =
+    ray.intersectObjects(
+      enemies.children,
+      true
+    );
+
+
+  if(hits.length){
+
+    let obj =
+      hits[0].object;
+
+    while(
+      obj.parent &&
+      obj.parent !== enemies
+    ){
+
+      obj = obj.parent;
+
+    }
+
+
+    if(obj.parent === enemies){
+
+      obj.userData.hp -= 50;
+
+      if(
+        obj.userData.hp <= 0
+      ){
+
+        enemies.remove(obj);
+
+        kills++;
+        score += 100;
+
+        if(
+          enemies.children.length === 0
+        ){
+
+          setTimeout(
+            spawnWave,
+            700
+          );
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  updateHUD();
+
+}
+
+
+/* =========================================================
+   RELOAD
+========================================================= */
+
+function reloadWeapon(){
+
+  if(
+    ammo >= 30 ||
+    reserve <= 0
+  ) return;
+
+  const needed =
+    30 - ammo;
+
+  const amount =
+    Math.min(
+      needed,
+      reserve
+    );
+
+  ammo += amount;
+  reserve -= amount;
+
+  updateHUD();
+
+}
+
+
+/* =========================================================
+   MOBILE FIRE
+========================================================= */
+
+document
+  .getElementById("fire")
+  .addEventListener(
+    "touchstart",
+    e=>{
+      e.preventDefault();
+      fireHeld = true;
+      shoot();
+    },
+    {passive:false}
+  );
+
+document
+  .getElementById("fire")
+  .addEventListener(
+    "touchend",
+    e=>{
+      e.preventDefault();
+      fireHeld = false;
+    },
+    {passive:false}
+  );
+
+
+document
+  .getElementById("reload")
+  .addEventListener(
+    "touchstart",
+    e=>{
+      e.preventDefault();
+      reloadWeapon();
+    },
+    {passive:false}
+  );
+
+
+/* =========================================================
+   DESKTOP FIRE
+========================================================= */
+
+window.addEventListener(
+  "mousedown",
+  e=>{
+    if(e.button === 0){
+      fireHeld = true;
+      shoot();
+    }
+  }
+);
+
+window.addEventListener(
+  "mouseup",
+  e=>{
+    if(e.button === 0){
+      fireHeld = false;
+    }
+  }
+);
+
+
+/* =========================================================
+   MOBILE MOVEMENT STICK
+========================================================= */
+
+function setupStick(
+  id,
+  callback
+){
+
+  const el =
+    document.getElementById(id);
+
+  const knob =
+    el.querySelector(".knob");
+
+  let active = false;
+
+  function move(e){
+
+    if(!active) return;
+
+    const rect =
+      el.getBoundingClientRect();
+
+    const cx =
+      rect.left +
+      rect.width/2;
+
+    const cy =
+      rect.top +
+      rect.height/2;
+
+    let x =
+      e.clientX-cx;
+
+    let y =
+      e.clientY-cy;
+
+    const max =
+      rect.width/2-28;
+
+    const d =
+      Math.sqrt(x*x+y*y);
+
+    if(d > max){
+
+      x = x/d*max;
+      y = y/d*max;
+
+    }
+
+    knob.style.transform =
+      `translate(${x}px,${y}px)`;
+
+    callback(
+      x/max,
+      y/max
+    );
+
+  }
+
+  function end(){
+
+    active = false;
+
+    knob.style.transform =
+      "translate(0,0)";
+
+    callback(0,0);
+
+  }
+
+  el.addEventListener(
+    "pointerdown",
+    e=>{
+      active = true;
+      el.setPointerCapture(
+        e.pointerId
+      );
+      move(e);
+    }
+  );
+
+  el.addEventListener(
+    "pointermove",
+    move
+  );
+
+  el.addEventListener(
+    "pointerup",
+    end
+  );
+
+  el.addEventListener(
+    "pointercancel",
+    end
+  );
+
+}
+
+
+setupStick(
+  "moveStick",
+  (x,y)=>{
+    moveX = x;
+    moveY = y;
+  }
+);
+
+
+setupStick(
+  "lookStick",
+  (x,y)=>{
+
+    lookX = x;
+    lookY = y;
+
+  }
+);
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update(dt){
+
+  if(!running)
+    return;
+
+
+  /* movement */
+
+  const speed =
+    7 * dt;
+
+  const forward =
+    new THREE.Vector3(
+      Math.sin(yaw),
+      0,
+      Math.cos(yaw)
+    );
+
+  const right =
+    new THREE.Vector3(
+      Math.cos(yaw),
+      0,
+      -Math.sin(yaw)
+    );
+
+
+  camera.position.addScaledVector(
+    forward,
+    -moveY * speed
+  );
+
+  camera.position.addScaledVector(
+    right,
+    moveX * speed
+  );
+
+
+  /* desktop keyboard */
+
+  if(keys["KeyW"])
+    camera.position.addScaledVector(
+      forward,
+      -speed
+    );
+
+  if(keys["KeyS"])
+    camera.position.addScaledVector(
+      forward,
+      speed
+    );
+
+  if(keys["KeyA"])
+    camera.position.addScaledVector(
+      right,
+      -speed
+    );
+
+  if(keys["KeyD"])
+    camera.position.addScaledVector(
+      right,
+      speed
+    );
+
+
+  /* mobile look */
+
+  yaw -= lookX * dt * 3;
+  pitch -= lookY * dt * 2;
+
+  pitch =
+    Math.max(
+      -.8,
+      Math.min(.8,pitch)
+    );
+
+
+  camera.rotation.order =
+    "YXZ";
+
+  camera.rotation.y =
+    yaw;
+
+  camera.rotation.x =
+    pitch;
+
+
+  /* enemies */
+
+  for(
+    const enemy of enemies.children
+  ){
+
+    const target =
+      camera.position;
+
+    const dx =
+      target.x -
+      enemy.position.x;
+
+    const dz =
+      target.z -
+      enemy.position.z;
+
+    const dist =
+      Math.sqrt(
+        dx*dx+dz*dz
+      );
+
+    if(dist > 2){
+
+      enemy.position.x +=
+        dx/dist *
+        enemy.userData.speed *
+        dt;
+
+      enemy.position.z +=
+        dz/dist *
+        enemy.userData.speed *
+        dt;
+
+    }
+
+  }
+
+
+  if(fireHeld)
+    shoot();
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+const keys = {};
+
+window.addEventListener(
+  "keydown",
+  e=>{
+    keys[e.code] = true;
+
+    if(e.code === "KeyR")
+      reloadWeapon();
+  }
+);
+
+window.addEventListener(
+  "keyup",
+  e=>{
+    keys[e.code] = false;
+  }
+);
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+  document.getElementById(
+    "score"
+  ).textContent = score;
+
+  document.getElementById(
+    "enemies"
+  ).textContent =
+    enemies.children.length;
+
+}
+
+
+/* =========================================================
+   LOOP
+========================================================= */
+
+let previous =
+  performance.now();
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+  const now =
+    performance.now();
+
+  const dt =
+    Math.min(
+      (now-previous)/1000,
+      .05
+    );
+
+  previous = now;
+
+  update(dt);
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+animate();
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect =
+      innerWidth /
+      innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
+);
+
+</script>
+
 </body>
 </html>
