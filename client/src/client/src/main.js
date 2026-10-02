@@ -1,5 +1,6 @@
-import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+/* =========================================================
+   LAST LINE — MAIN ENTRY
+   ========================================================= */
 
 
 /* =========================================================
@@ -32,190 +33,52 @@ const menuStatus =
 
 
 /* =========================================================
-   THREE.JS
+   STATE
    ========================================================= */
 
-const scene =
-  new THREE.Scene();
-
-scene.background =
-  new THREE.Color(0x111518);
-
-scene.fog =
-  new THREE.Fog(
-    0x111518,
-    35,
-    220
-  );
-
-
-/* =========================================================
-   CAMERA
-   ========================================================= */
-
-const camera =
-  new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth /
-      window.innerHeight,
-    0.05,
-    500
-  );
-
-camera.position.set(
-  0,
-  1.7,
-  5
-);
-
-
-/* =========================================================
-   RENDERER
-   ========================================================= */
-
-const renderer =
-  new THREE.WebGLRenderer({
-    antialias: true,
-    powerPreference: "high-performance"
-  });
-
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio || 1,
-    2
-  )
-);
-
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
-renderer.shadowMap.enabled = true;
-
-renderer.shadowMap.type =
-  THREE.PCFSoftShadowMap;
-
-renderer.outputColorSpace =
-  THREE.SRGBColorSpace;
-
-renderer.toneMapping =
-  THREE.ACESFilmicToneMapping;
-
-renderer.toneMappingExposure =
-  1.0;
-
-gameContainer.appendChild(
-  renderer.domElement
-);
-
-
-/* =========================================================
-   LIGHTING
-   ========================================================= */
-
-const hemisphereLight =
-  new THREE.HemisphereLight(
-    0xc9d5dc,
-    0x252a27,
-    1.6
-  );
-
-scene.add(
-  hemisphereLight
-);
-
-
-const sun =
-  new THREE.DirectionalLight(
-    0xfff1d2,
-    2.5
-  );
-
-sun.position.set(
-  40,
-  60,
-  25
-);
-
-sun.castShadow = true;
-
-sun.shadow.mapSize.width =
-  2048;
-
-sun.shadow.mapSize.height =
-  2048;
-
-sun.shadow.camera.near =
-  1;
-
-sun.shadow.camera.far =
-  180;
-
-sun.shadow.camera.left =
-  -80;
-
-sun.shadow.camera.right =
-  80;
-
-sun.shadow.camera.top =
-  80;
-
-sun.shadow.camera.bottom =
-  -80;
-
-scene.add(
-  sun
-);
-
-
-const fillLight =
-  new THREE.DirectionalLight(
-    0x9bb8d4,
-    0.45
-  );
-
-fillLight.position.set(
-  -30,
-  20,
-  -40
-);
-
-scene.add(
-  fillLight
-);
-
-
-/* =========================================================
-   GAME CORE
-   ========================================================= */
-
-/*
-   IMPORTANT:
-   Core is loaded ONLY after DEPLOY.
-
-   This prevents an error inside core.js
-   from killing the menu before the button
-   can respond.
-*/
-
+let THREE = null;
 let core = null;
+let scene = null;
+let camera = null;
+let renderer = null;
+
+let gameStarted = false;
+
+
+/* =========================================================
+   IMMEDIATE BUTTON TEST
+   ========================================================= */
+
+function setStatus(text) {
+
+  if (menuStatus) {
+    menuStatus.textContent = text;
+  }
+
+}
 
 
 /* =========================================================
    DEPLOY
    ========================================================= */
 
-async function deploy() {
+async function deploy(event) {
 
-  if (deployButton.disabled) {
+  if (event) {
+    event.preventDefault();
+  }
+
+
+  if (gameStarted) {
     return;
   }
 
 
   const callsign =
-    callsignInput.value.trim() ||
-    "Phantom";
+    callsignInput &&
+    callsignInput.value.trim()
+      ? callsignInput.value.trim()
+      : "Phantom";
 
 
   const mode =
@@ -224,108 +87,309 @@ async function deploy() {
       : "rescue";
 
 
-  /* -------------------------
-     UI
-  ------------------------- */
+  /*
+   * This happens BEFORE loading Three.js.
+   * Therefore we know the button itself works.
+   */
 
-  menuStatus.textContent =
-    "INITIALIZING...";
+  setStatus(
+    "INITIALIZING..."
+  );
+
 
   deployButton.disabled =
     true;
 
+
   loadingScreen.style.display =
     "flex";
 
+
   loadingProgress.style.width =
-    "0%";
-
-
-  /* -------------------------
-     Loading animation
-  ------------------------- */
-
-  let progress = 0;
-
-  const loadingTimer =
-    setInterval(() => {
-
-      progress += 10;
-
-      loadingProgress.style.width =
-        `${progress}%`;
-
-    }, 40);
+    "5%";
 
 
   try {
 
-    /*
-     * Load Core now.
-     */
+    /* =====================================================
+       LOAD THREE.JS
+    ===================================================== */
 
-    const module =
-      await import("./core.js");
+    setStatus(
+      "LOADING ENGINE..."
+    );
+
+
+    loadingProgress.style.width =
+      "20%";
+
+
+    THREE =
+      await import(
+        "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+      );
+
+
+    /* =====================================================
+       CREATE SCENE
+    ===================================================== */
+
+    setStatus(
+      "CREATING WORLD..."
+    );
+
+
+    loadingProgress.style.width =
+      "40%";
+
+
+    scene =
+      new THREE.Scene();
+
+
+    scene.background =
+      new THREE.Color(
+        0x111518
+      );
+
+
+    scene.fog =
+      new THREE.Fog(
+        0x111518,
+        35,
+        220
+      );
+
+
+    /* =====================================================
+       CAMERA
+    ===================================================== */
+
+    camera =
+      new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth /
+          window.innerHeight,
+        0.05,
+        500
+      );
+
+
+    camera.position.set(
+      0,
+      1.7,
+      5
+    );
+
+
+    /* =====================================================
+       RENDERER
+    ===================================================== */
+
+    renderer =
+      new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference:
+          "high-performance"
+      });
+
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio || 1,
+        2
+      )
+    );
+
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+    renderer.shadowMap.enabled =
+      true;
+
+
+    renderer.shadowMap.type =
+      THREE.PCFSoftShadowMap;
+
+
+    renderer.outputColorSpace =
+      THREE.SRGBColorSpace;
+
+
+    renderer.toneMapping =
+      THREE.ACESFilmicToneMapping;
+
+
+    renderer.toneMappingExposure =
+      1.0;
+
+
+    gameContainer.appendChild(
+      renderer.domElement
+    );
+
+
+    /* =====================================================
+       LIGHTING
+    ===================================================== */
+
+    const hemisphere =
+      new THREE.HemisphereLight(
+        0xc9d5dc,
+        0x252a27,
+        1.6
+      );
+
+
+    scene.add(
+      hemisphere
+    );
+
+
+    const sun =
+      new THREE.DirectionalLight(
+        0xfff1d2,
+        2.5
+      );
+
+
+    sun.position.set(
+      40,
+      60,
+      25
+    );
+
+
+    sun.castShadow =
+      true;
+
+
+    sun.shadow.mapSize.width =
+      2048;
+
+
+    sun.shadow.mapSize.height =
+      2048;
+
+
+    sun.shadow.camera.near =
+      1;
+
+
+    sun.shadow.camera.far =
+      180;
+
+
+    sun.shadow.camera.left =
+      -80;
+
+
+    sun.shadow.camera.right =
+      80;
+
+
+    sun.shadow.camera.top =
+      80;
+
+
+    sun.shadow.camera.bottom =
+      -80;
+
+
+    scene.add(
+      sun
+    );
+
+
+    const fill =
+      new THREE.DirectionalLight(
+        0x9bb8d4,
+        0.45
+      );
+
+
+    fill.position.set(
+      -30,
+      20,
+      -40
+    );
+
+
+    scene.add(
+      fill
+    );
+
+
+    /* =====================================================
+       LOAD CORE
+    ===================================================== */
+
+    setStatus(
+      "LOADING GAME..."
+    );
+
+
+    loadingProgress.style.width =
+      "60%";
+
+
+    const coreModule =
+      await import(
+        "./core.js"
+      );
 
 
     if (
-      !module ||
-      !module.Core
+      !coreModule ||
+      !coreModule.Core
     ) {
 
       throw new Error(
-        "Core class was not exported from core.js"
+        "Core class not found"
       );
 
     }
 
 
-    /*
-     * Create the game core.
-     */
+    /* =====================================================
+       CREATE CORE
+    ===================================================== */
 
     core =
-      new module.Core({
+      new coreModule.Core({
         scene,
         camera,
         renderer
       });
 
 
-    /*
-     * Finish loading animation.
-     */
-
-    await new Promise(
-      resolve =>
-        setTimeout(resolve, 450)
-    );
-
-
-    clearInterval(
-      loadingTimer
-    );
-
     loadingProgress.style.width =
-      "100%";
+      "85%";
 
 
-    await new Promise(
-      resolve =>
-        setTimeout(resolve, 120)
+    setStatus(
+      "DEPLOYING..."
     );
 
 
-    /* -------------------------
-       Start game
-    ------------------------- */
+    /* Small delay so the loading UI is visible */
 
-    menu.style.display =
-      "none";
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          300
+        )
+    );
 
-    loadingScreen.style.display =
-      "none";
 
+    /* =====================================================
+       START
+    ===================================================== */
 
     core.start({
       callsign,
@@ -333,15 +397,44 @@ async function deploy() {
     });
 
 
-  } catch (error) {
+    gameStarted =
+      true;
 
-    clearInterval(
-      loadingTimer
+
+    loadingProgress.style.width =
+      "100%";
+
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          150
+        )
     );
 
 
+    menu.style.display =
+      "none";
+
+
+    loadingScreen.style.display =
+      "none";
+
+
+    /*
+     * Mobile controls are deliberately
+     * NOT shown here yet.
+     *
+     * Core/TouchControls will handle them
+     * when gameplay is actually active.
+     */
+
+
+  } catch (error) {
+
     console.error(
-      "LAST LINE CORE ERROR:",
+      "LAST LINE ERROR:",
       error
     );
 
@@ -354,21 +447,22 @@ async function deploy() {
       false;
 
 
-    menuStatus.textContent =
-      "GAME ERROR — CHECK CORE";
+    setStatus(
+      "ERROR — GAME FAILED TO LOAD"
+    );
 
 
     /*
-     * Make the error visible
-     * instead of silently failing.
+     * Keep the error in the console
+     * so we can identify the exact file
+     * if something is still broken.
      */
 
-    setTimeout(() => {
-
-      menuStatus.textContent =
-        "CORE FAILED TO LOAD";
-
-    }, 1000);
+    console.error(
+      error.stack ||
+      error.message ||
+      error
+    );
 
   }
 
@@ -376,8 +470,12 @@ async function deploy() {
 
 
 /* =========================================================
-   BUTTON
+   BUTTON EVENTS
    ========================================================= */
+
+/*
+ * CLICK
+ */
 
 deployButton.addEventListener(
   "click",
@@ -386,20 +484,49 @@ deployButton.addEventListener(
 
 
 /*
- * iPad / touch fallback.
+ * TOUCH / IPAD
  *
- * Safari normally generates a click,
- * but this gives the button an explicit
- * pointer handler as well.
+ * Safari should normally turn this into
+ * a click, but this makes the interaction
+ * reliable on the iPad.
+ */
+
+deployButton.addEventListener(
+  "touchend",
+  event => {
+
+    event.preventDefault();
+
+    deploy(event);
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+/*
+ * POINTER
  */
 
 deployButton.addEventListener(
   "pointerup",
   event => {
 
-    event.preventDefault();
+    /*
+     * Don't trigger twice if Safari
+     * already generated touchend.
+     */
 
-    deploy();
+    if (
+      event.pointerType !==
+      "touch"
+    ) {
+
+      deploy(event);
+
+    }
 
   }
 );
@@ -414,10 +541,11 @@ callsignInput.addEventListener(
   event => {
 
     if (
-      event.key === "Enter"
+      event.key ===
+      "Enter"
     ) {
 
-      deploy();
+      deploy(event);
 
     }
 
@@ -433,22 +561,27 @@ window.addEventListener(
   "resize",
   () => {
 
-    const width =
-      window.innerWidth;
+    if (
+      !camera ||
+      !renderer
+    ) {
 
-    const height =
-      window.innerHeight;
+      return;
+
+    }
 
 
     camera.aspect =
-      width / height;
+      window.innerWidth /
+      window.innerHeight;
+
 
     camera.updateProjectionMatrix();
 
 
     renderer.setSize(
-      width,
-      height
+      window.innerWidth,
+      window.innerHeight
     );
 
 
@@ -527,7 +660,7 @@ function gameLoop(
     currentTime;
 
 
-  const deltaTime =
+  const dt =
     Math.min(
       elapsed / 1000,
       0.05
@@ -541,16 +674,24 @@ function gameLoop(
   ) {
 
     core.update(
-      deltaTime
+      dt
     );
 
   }
 
 
-  renderer.render(
-    scene,
+  if (
+    renderer &&
+    scene &&
     camera
-  );
+  ) {
+
+    renderer.render(
+      scene,
+      camera
+    );
+
+  }
 
 
   requestAnimationFrame(
