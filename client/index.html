@@ -290,9 +290,10 @@ button{
   background:rgba(255,255,255,.12);
 }
 
+/* IMPORTANT: mobile controls are hidden on the menu */
 @media(pointer:coarse){
   #mobile{
-    display:block;
+    display:none;
   }
 }
 
@@ -717,6 +718,7 @@ function createEnemy(){
 
 
   g.userData.hp = 100;
+
   g.userData.speed =
     1.1 + Math.random()*.8;
 
@@ -807,6 +809,11 @@ function deploy(){
 
   document.getElementById(
     "hud"
+  ).style.display = "block";
+
+  /* SHOW MOBILE CONTROLS AFTER DEPLOY */
+  document.getElementById(
+    "mobile"
   ).style.display = "block";
 
   document.getElementById(
@@ -1115,9 +1122,11 @@ function setupStick(
     "pointerdown",
     e=>{
       active = true;
+
       el.setPointerCapture(
         e.pointerId
       );
+
       move(e);
     }
   );
@@ -1170,10 +1179,10 @@ function update(dt){
     return;
 
 
-  /* movement */
+  /* MOVEMENT */
 
   const speed =
-    7 * dt;
+    3.2 * dt;
 
   const forward =
     new THREE.Vector3(
@@ -1201,7 +1210,7 @@ function update(dt){
   );
 
 
-  /* desktop keyboard */
+  /* DESKTOP KEYBOARD */
 
   if(keys["KeyW"])
     camera.position.addScaledVector(
@@ -1228,10 +1237,10 @@ function update(dt){
     );
 
 
-  /* mobile look */
+  /* MOBILE LOOK */
 
-  yaw -= lookX * dt * 3;
-  pitch -= lookY * dt * 2;
+  yaw -= lookX * dt * 1.15;
+  pitch -= lookY * dt * 0.8;
 
   pitch =
     Math.max(
@@ -1250,7 +1259,7 @@ function update(dt){
     pitch;
 
 
-  /* enemies */
+  /* ENEMIES */
 
   for(
     const enemy of enemies.children
