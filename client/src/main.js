@@ -1,100 +1,73 @@
 import * as THREE from
   "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-import { PointerLockControls } from
-  "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/PointerLockControls.js";
-
-import { World } from "./game/World.js";
-import { Player } from "./game/Player.js";
-import { AIController } from "./game/AI.js";
-import { Combat } from "./game/Combat.js";
-import {
-  WeaponSystem,
-  WEAPONS
-} from "./game/Weapons.js";
-
-import { Particles } from "./game/Particles.js";
-
-import {
-  Progression
-} from "./systems/Progression.js";
-
-import {
-  Mission,
-  MISSIONS
-} from "./systems/Missions.js";
-
-import {
-  CaseSystem
-} from "./systems/CaseSystem.js";
-
-import {
-  Settings
-} from "./systems/Settings.js";
-
-import { Input } from "./input/Input.js";
-import { Touch } from "./input/Touch.js";
-
-import { HUD } from "./ui/HUD.js";
-
-import {
-  MissionVoice
-} from "./game/MissionVoice.js";
-
-import {
-  ObjectiveSystem
-} from "./game/ObjectiveSystem.js";
-
-import {
-  Extraction
-} from "./game/Extraction.js";
-
-import {
-  EnemySpawner
-} from "./game/EnemySpawner.js";
-
-import {
-  HitEffects
-} from "./game/HitEffects.js";
-
-import {
-  SaveSystem
-} from "./systems/SaveSystem.js";
-
-import {
-  Statistics
-} from "./systems/Statistics.js";
-
-import {
-  MissionResult
-} from "./ui/MissionResult.js";
+import { Core } from "./core.js";
 
 
 /* =========================================================
    DOM
    ========================================================= */
 
-const $ = id =>
-  document.getElementById(id);
+const gameContainer =
+  document.getElementById("game");
 
 const menu =
-  $("menu");
+  document.getElementById("menu");
 
-const hudElement =
-  $("hud");
-
-const deploy =
-  $("deploy");
-
-const missionSelect =
-  $("mission");
+const deployButton =
+  document.getElementById("deployButton");
 
 const callsignInput =
-  $("callsign");
+  document.getElementById("callsign");
+
+const modeSelect =
+  document.getElementById("mode");
+
+const loadingScreen =
+  document.getElementById("loadingScreen");
+
+const loadingProgress =
+  document.getElementById("loadingProgress");
+
+const menuStatus =
+  document.getElementById("menuStatus");
 
 
 /* =========================================================
-   THREE.JS
+   SAFETY CHECK
+   ========================================================= */
+
+if (!gameContainer) {
+  throw new Error("Missing #game");
+}
+
+if (!menu) {
+  throw new Error("Missing #menu");
+}
+
+if (!deployButton) {
+  throw new Error("Missing #deployButton");
+}
+
+if (!callsignInput) {
+  throw new Error("Missing #callsign");
+}
+
+if (!loadingScreen) {
+  throw new Error("Missing #loadingScreen");
+}
+
+if (!loadingProgress) {
+  throw new Error("Missing #loadingProgress");
+}
+
+if (!menuStatus) {
+  throw new Error("Missing #menuStatus");
+}
+
+
+/* =========================================================
+   SCENE
    ========================================================= */
 
 const scene =
@@ -102,31 +75,40 @@ const scene =
 
 scene.background =
   new THREE.Color(
-    0x071018
+    0x111518
   );
 
 scene.fog =
   new THREE.Fog(
-    0x071018,
+    0x111518,
     35,
-    170
+    220
   );
 
+
+/* =========================================================
+   CAMERA
+   ========================================================= */
 
 const camera =
   new THREE.PerspectiveCamera(
     75,
-    innerWidth / innerHeight,
+    window.innerWidth /
+      window.innerHeight,
     0.05,
-    400
+    500
   );
 
 camera.position.set(
   0,
   1.7,
-  12
+  5
 );
 
+
+/* =========================================================
+   RENDERER
+   ========================================================= */
 
 const renderer =
   new THREE.WebGLRenderer({
@@ -135,16 +117,16 @@ const renderer =
       "high-performance"
   });
 
-renderer.setSize(
-  innerWidth,
-  innerHeight
-);
-
 renderer.setPixelRatio(
   Math.min(
-    devicePixelRatio,
+    window.devicePixelRatio || 1,
     2
   )
+);
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
 );
 
 renderer.shadowMap.enabled =
@@ -153,7 +135,16 @@ renderer.shadowMap.enabled =
 renderer.shadowMap.type =
   THREE.PCFSoftShadowMap;
 
-document.body.prepend(
+renderer.outputColorSpace =
+  THREE.SRGBColorSpace;
+
+renderer.toneMapping =
+  THREE.ACESFilmicToneMapping;
+
+renderer.toneMappingExposure =
+  1.0;
+
+gameContainer.appendChild(
   renderer.domElement
 );
 
@@ -162,24 +153,28 @@ document.body.prepend(
    LIGHTING
    ========================================================= */
 
-scene.add(
+const hemisphereLight =
   new THREE.HemisphereLight(
-    0xbad7e5,
-    0x101820,
-    1.5
-  )
+    0xc9d5dc,
+    0x252a27,
+    1.6
+  );
+
+scene.add(
+  hemisphereLight
 );
+
 
 const sun =
   new THREE.DirectionalLight(
-    0xffffff,
-    2
+    0xfff1d2,
+    2.5
   );
 
 sun.position.set(
-  30,
-  45,
-  15
+  40,
+  60,
+  25
 );
 
 sun.castShadow =
@@ -191,1256 +186,310 @@ sun.shadow.mapSize.width =
 sun.shadow.mapSize.height =
   2048;
 
+sun.shadow.camera.near =
+  1;
+
+sun.shadow.camera.far =
+  180;
+
+sun.shadow.camera.left =
+  -80;
+
+sun.shadow.camera.right =
+  80;
+
+sun.shadow.camera.top =
+  80;
+
+sun.shadow.camera.bottom =
+  -80;
+
 scene.add(
   sun
 );
 
 
-/* =========================================================
-   CORE SYSTEMS
-   ========================================================= */
+const fillLight =
+  new THREE.DirectionalLight(
+    0x9bb8d4,
+    0.45
+  );
 
-const input =
-  new Input();
+fillLight.position.set(
+  -30,
+  20,
+  -40
+);
 
-input.bindMouse(
-  renderer.domElement
+scene.add(
+  fillLight
 );
 
 
-const settings =
-  new Settings();
+/* =========================================================
+   CORE
+   ========================================================= */
 
-settings.load();
-
-camera.fov =
-  settings.data.fov;
-
-camera.updateProjectionMatrix();
-
-
-const player =
-  new Player(camera);
-
-
-const world =
-  new World(scene);
-
-world.build();
-
-
-const enemies =
-  new THREE.Group();
-
-scene.add(enemies);
-
-
-const effects =
-  new THREE.Group();
-
-scene.add(effects);
-
-
-const particles =
-  new Particles(effects);
-
-
-const progression =
-  new Progression(player);
-
-
-const caseSystem =
-  new CaseSystem(progression);
-
-
-const hud =
-  new HUD();
-
-
-const missionVoice =
-  new MissionVoice();
-
-
-const combat =
-  new Combat(
-    camera,
-    enemies,
-    effects,
-    player
-  );
-
-
-const ai =
-  new AIController(
+const core =
+  new Core({
     scene,
-    enemies,
-    player
-  );
-
-
-const weapon =
-  new WeaponSystem(
     camera,
-    combat,
-    effects
-  );
-
-
-new Touch(input);
+    renderer
+  });
 
 
 /* =========================================================
-   NEW SYSTEMS
+   DEPLOY STATE
    ========================================================= */
 
-const saveSystem =
-  new SaveSystem(
-    player,
-    progression
-  );
-
-saveSystem.load();
-
-
-const statistics =
-  new Statistics();
-
-
-const extraction =
-  new Extraction(scene);
-
-
-const resultScreen =
-  new MissionResult();
-
-
-let objectives = null;
-let enemySpawner = null;
+let deploying = false;
+let running = false;
 
 
 /* =========================================================
-   POINTER LOCK
+   DEPLOY FUNCTION
    ========================================================= */
 
-const controls =
-  new PointerLockControls(
-    camera,
-    document.body
-  );
+async function deploy(event) {
 
-let pointerLocked =
-  false;
-
-controls.addEventListener(
-  "lock",
-  () => {
-    pointerLocked = true;
+  if (event) {
+    event.preventDefault();
   }
-);
 
-controls.addEventListener(
-  "unlock",
-  () => {
-    pointerLocked = false;
+  if (deploying || running) {
+    return;
   }
-);
+
+  deploying = true;
 
 
-/* =========================================================
-   LOOK
-   ========================================================= */
+  const callsign =
+    callsignInput.value.trim() ||
+    "Phantom";
 
-let yaw = 0;
-let pitch = 0;
-
-const sensitivity =
-  Number(
-    settings.data.sensitivity ||
-    0.002
-  );
+  const mode =
+    modeSelect
+      ? modeSelect.value
+      : "rescue";
 
 
-window.addEventListener(
-  "mousemove",
-  event => {
+  menuStatus.textContent =
+    "INITIALIZING...";
 
-    if (!running) return;
+  deployButton.disabled =
+    true;
 
-    if (
-      !pointerLocked
-    ) {
-      return;
-    }
+  loadingScreen.style.display =
+    "flex";
 
-    yaw -=
-      event.movementX *
-      sensitivity;
+  loadingProgress.style.width =
+    "0%";
 
-    pitch -=
-      event.movementY *
-      sensitivity;
 
-    pitch =
-      Math.max(
-        -Math.PI / 2 + 0.05,
-        Math.min(
-          Math.PI / 2 - 0.05,
-          pitch
+  /* =====================================================
+     LOADING
+     ===================================================== */
+
+  let progress = 0;
+
+  const timer =
+    setInterval(() => {
+
+      progress += 10;
+
+      loadingProgress.style.width =
+        `${Math.min(progress, 90)}%`;
+
+    }, 45);
+
+
+  try {
+
+    /*
+     * Give the browser a moment to
+     * render the loading screen.
+     */
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          100
         )
-      );
+    );
 
-    camera.rotation.order =
-      "YXZ";
 
-    camera.rotation.y =
-      yaw;
+    loadingProgress.style.width =
+      "35%";
 
-    camera.rotation.x =
-      pitch;
+    menuStatus.textContent =
+      "LOADING WORLD...";
+
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          100
+        )
+    );
+
+
+    loadingProgress.style.width =
+      "70%";
+
+    menuStatus.textContent =
+      "DEPLOYING...";
+
+
+    /*
+     * Start the actual game.
+     */
+
+    core.start({
+      callsign,
+      mode
+    });
+
+
+    running =
+      true;
+
+
+    loadingProgress.style.width =
+      "100%";
+
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          150
+        )
+    );
+
+
+    clearInterval(
+      timer
+    );
+
+
+    loadingScreen.style.display =
+      "none";
+
+    menu.style.display =
+      "none";
+
+
+    deploying =
+      false;
+
+
+  } catch (error) {
+
+    clearInterval(
+      timer
+    );
+
+
+    console.error(
+      "LAST LINE DEPLOY ERROR:",
+      error
+    );
+
+
+    loadingScreen.style.display =
+      "none";
+
+    deployButton.disabled =
+      false;
+
+    deploying =
+      false;
+
+
+    menuStatus.textContent =
+      "DEPLOY ERROR";
+
+
+    /*
+     * Keep menu visible so the
+     * game doesn't become stuck.
+     */
+
+    setTimeout(() => {
+
+      menuStatus.textContent =
+        "READY FOR DEPLOYMENT";
+
+    }, 2500);
+
   }
-);
+
+}
 
 
 /* =========================================================
-   MOBILE LOOK
+   DEPLOY BUTTON
    ========================================================= */
 
-let touchLook = false;
-let lastTouchX = 0;
-let lastTouchY = 0;
+/*
+ * Use pointerup for iPad + desktop.
+ */
 
-
-renderer.domElement.addEventListener(
-  "pointerdown",
-  event => {
-
-    if (
-      event.pointerType ===
-      "touch"
-    ) {
-      touchLook = true;
-
-      lastTouchX =
-        event.clientX;
-
-      lastTouchY =
-        event.clientY;
-    }
-  }
-);
-
-
-renderer.domElement.addEventListener(
-  "pointermove",
-  event => {
-
-    if (
-      !touchLook ||
-      event.pointerType !==
-        "touch"
-    ) {
-      return;
-    }
-
-    const dx =
-      event.clientX -
-      lastTouchX;
-
-    const dy =
-      event.clientY -
-      lastTouchY;
-
-    lastTouchX =
-      event.clientX;
-
-    lastTouchY =
-      event.clientY;
-
-    yaw -=
-      dx *
-      sensitivity *
-      1.7;
-
-    pitch -=
-      dy *
-      sensitivity *
-      1.7;
-
-    pitch =
-      Math.max(
-        -Math.PI / 2 + 0.05,
-        Math.min(
-          Math.PI / 2 - 0.05,
-          pitch
-        )
-      );
-
-    camera.rotation.order =
-      "YXZ";
-
-    camera.rotation.y =
-      yaw;
-
-    camera.rotation.x =
-      pitch;
-  }
-);
-
-
-renderer.domElement.addEventListener(
+deployButton.addEventListener(
   "pointerup",
   event => {
 
-    if (
-      event.pointerType ===
-      "touch"
-    ) {
-      touchLook = false;
-    }
-  }
-);
+    deploy(event);
 
-renderer.domElement.addEventListener(
-  "pointercancel",
-  () => {
-    touchLook = false;
   }
 );
 
 
-/* =========================================================
-   GAME STATE
-   ========================================================= */
-
-let running = false;
-let finished = false;
-
-let currentMissionType =
-  "tdm";
-
-let mission = null;
-
-
-/* =========================================================
-   EXTRACTION LOCATION
-   ========================================================= */
-
-function getExtractionPoint() {
-
-  /*
-   * We deliberately don't depend on a method that may not
-   * exist in the older World.js file.
-   */
-
-  return new THREE.Vector3(
-    -35,
-    0,
-    -35
-  );
-}
-
-
-/* =========================================================
-   HOSTAGE
-   ========================================================= */
-
-let hostage = null;
-
-function createHostage() {
-
-  if (hostage) {
-    scene.remove(
-      hostage
-    );
-  }
-
-  hostage =
-    new THREE.Group();
-
-
-  const body =
-    new THREE.Mesh(
-      new THREE.CapsuleGeometry(
-        0.35,
-        0.8,
-        4,
-        8
-      ),
-      new THREE.MeshStandardMaterial({
-        color: 0x42e8ff
-      })
-    );
-
-  body.position.y =
-    0.8;
-
-
-  const ring =
-    new THREE.Mesh(
-      new THREE.TorusGeometry(
-        1.2,
-        0.05,
-        8,
-        32
-      ),
-      new THREE.MeshBasicMaterial({
-        color: 0x42e8ff
-      })
-    );
-
-  ring.rotation.x =
-    Math.PI / 2;
-
-
-  hostage.add(body);
-  hostage.add(ring);
-
-
-  hostage.position.set(
-    20,
-    0,
-    -18
-  );
-
-
-  scene.add(
-    hostage
-  );
-}
-
-
-/* =========================================================
-   CLEAR ENEMIES
-   ========================================================= */
-
-function clearEnemies() {
-
-  while (
-    enemies.children.length
-  ) {
-
-    const enemy =
-      enemies.children[
-        enemies.children.length - 1
-      ];
-
-    enemies.remove(
-      enemy
-    );
-  }
-}
-
-
-/* =========================================================
-   HVT
-   ========================================================= */
-
-function createHVT() {
-
-  const target =
-    enemies.children[0];
-
-  if (!target) return;
-
-  target.userData.isHVT =
-    true;
-
-  target.userData.hp =
-    250;
-}
-
-
-/* =========================================================
-   START MISSION
-   ========================================================= */
-
-function startMission() {
-
-  currentMissionType =
-    missionSelect.value;
-
-  mission =
-    new Mission(
-      currentMissionType
-    );
-
-
-  player.reset();
-
-  clearEnemies();
-
-  extraction.remove();
-
-
-  if (hostage) {
-    scene.remove(
-      hostage
-    );
-
-    hostage = null;
-  }
-
-
-  const enemyCount =
-    currentMissionType ===
-      "survival"
-      ? 8
-      : 14;
-
-
-  ai.spawn(
-    enemyCount
-  );
-
-
-  if (
-    currentMissionType ===
-    "hvt"
-  ) {
-    createHVT();
-  }
-
-
-  if (
-    currentMissionType ===
-    "hostage"
-  ) {
-    createHostage();
-  }
-
-
-  if (
-    currentMissionType ===
-    "survival"
-  ) {
-
-    enemySpawner =
-      new EnemySpawner(ai);
-
-    enemySpawner.start();
-
-  } else {
-
-    enemySpawner =
-      null;
-  }
-
-
-  objectives =
-    new ObjectiveSystem(
-      currentMissionType,
-      player,
-      enemies,
-      {
-        getExtractionPoint
-      }
-    );
-
-
-  weapon.equip(
-    "vanguard"
-  );
-
-
-  finished = false;
-  running = true;
-
-
-  menu.classList.add(
-    "hidden"
-  );
-
-  hudElement.classList.remove(
-    "hidden"
-  );
-
-
-  const info =
-    MISSIONS[
-      currentMissionType
-    ];
-
-
-  $("missionName").textContent =
-    info.name;
-
-  $("objective").textContent =
-    info.objective;
-
-
-  missionVoice.playMission(
-    currentMissionType
-  );
-
-
-  if (
-    !("ontouchstart" in window)
-  ) {
-    controls.lock();
-  }
-}
-
-
-/* =========================================================
-   COMPLETE MISSION
-   ========================================================= */
-
-function completeMission() {
-
-  if (finished) return;
-
-  finished = true;
-  running = false;
-
-
-  const reward =
-    500;
-
-  progression.rewardXP(
-    reward
-  );
-
-  player.score +=
-    reward;
-
-
-  statistics.missionComplete();
-  statistics.victory();
-
-  saveSystem.save();
-
-
-  missionVoice.say(
-    "COMMAND",
-    "Mission complete. Return to base."
-  );
-
-
-  if (pointerLocked) {
-    controls.unlock();
-  }
-
-
-  resultScreen.show(
-    true,
-    player.score,
-    reward
-  );
-
-
-  setTimeout(
-    () => {
-      hud.hide();
-    },
-    100
-  );
-}
-
-
-/* =========================================================
-   FAIL MISSION
-   ========================================================= */
-
-function failMission() {
-
-  if (finished) return;
-
-  finished = true;
-  running = false;
-
-
-  statistics.death();
-
-  saveSystem.save();
-
-
-  missionVoice.say(
-    "COMMAND",
-    "Operator down. Mission failed."
-  );
-
-
-  if (pointerLocked) {
-    controls.unlock();
-  }
-
-
-  resultScreen.show(
-    false,
-    player.score,
-    0
-  );
-
-
-  setTimeout(
-    () => {
-      hud.hide();
-    },
-    100
-  );
-}
-
-
-/* =========================================================
-   COMBAT
-   ========================================================= */
-
-combat.onHit =
-  (
-    enemy,
-    damage,
-    headshot
-  ) => {
-
-    const position =
-      enemy.position.clone();
-
-    position.y += 1;
-
-
-    particles.burst(
-      position,
-      headshot
-        ? 0xffffff
-        : 0xffb84d,
-      headshot
-        ? 14
-        : 8
-    );
-  };
-
-
-combat.onKill =
-  (
-    enemy,
-    headshot
-  ) => {
-
-    statistics.kill(
-      headshot
-    );
-
-
-    progression.rewardXP(
-      headshot
-        ? 75
-        : 50
-    );
-
-
-    particles.burst(
-      enemy.position,
-      0xff4055,
-      15
-    );
-
-
-    objectives?.registerKill(
-      enemy
-    );
-
-
-    if (
-      mission &&
-      currentMissionType ===
-        "tdm"
-    ) {
-      mission.kill();
+/*
+ * Normal click fallback.
+ */
+
+deployButton.addEventListener(
+  "click",
+  event => {
+
+    /*
+     * Safari can generate both
+     * pointerup and click.
+     *
+     * Only deploy if the pointer
+     * handler didn't already start it.
+     */
+
+    if (!deploying && !running) {
+      deploy(event);
     }
 
-
-    if (
-      mission &&
-      currentMissionType ===
-        "hvt" &&
-      enemy.userData.isHVT
-    ) {
-      mission.kill();
-    }
-  };
+  }
+);
 
 
 /* =========================================================
-   WEAPONS
+   ENTER KEY
    ========================================================= */
 
-const weaponOrder = [
-  "vanguard",
-  "spectre",
-  "sentinel",
-  "breach"
-];
-
-let weaponIndex = 0;
-
-
-function switchWeapon() {
-
-  weaponIndex =
-    (weaponIndex + 1) %
-    weaponOrder.length;
-
-
-  weapon.equip(
-    weaponOrder[
-      weaponIndex
-    ]
-  );
-
-
-  hud.toast(
-    WEAPONS[
-      weaponOrder[
-        weaponIndex
-      ]
-    ].name
-  );
-}
-
-
-window.addEventListener(
+callsignInput.addEventListener(
   "keydown",
   event => {
 
-    if (!running) return;
-
-
     if (
-      event.code ===
-      "Digit1"
+      event.key ===
+      "Enter"
     ) {
-      weaponIndex = 0;
-      weapon.equip(
-        "vanguard"
-      );
+
+      deploy(event);
+
     }
 
-
-    if (
-      event.code ===
-      "Digit2"
-    ) {
-      weaponIndex = 1;
-      weapon.equip(
-        "spectre"
-      );
-    }
-
-
-    if (
-      event.code ===
-      "Digit3"
-    ) {
-      weaponIndex = 2;
-      weapon.equip(
-        "sentinel"
-      );
-    }
-
-
-    if (
-      event.code ===
-      "Digit4"
-    ) {
-      weaponIndex = 3;
-      weapon.equip(
-        "breach"
-      );
-    }
-
-
-    if (
-      event.code ===
-      "KeyR"
-    ) {
-      weapon.reload();
-    }
   }
 );
-
-
-/* =========================================================
-   MOBILE ACTIONS
-   ========================================================= */
-
-$("mobile-switch")
-  ?.addEventListener(
-    "pointerdown",
-    () => {
-
-      if (running) {
-        switchWeapon();
-      }
-    }
-  );
-
-
-$("mobile-reload")
-  ?.addEventListener(
-    "pointerdown",
-    () => {
-
-      if (running) {
-        weapon.reload();
-      }
-    }
-  );
-
-
-/* =========================================================
-   DEPLOY
-   ========================================================= */
-
-deploy.addEventListener(
-  "click",
-  () => {
-    startMission();
-  }
-);
-
-
-/* =========================================================
-   CASE
-   ========================================================= */
-
-window.openCase =
-  () => {
-
-    const result =
-      caseSystem.open();
-
-    if (!result) {
-
-      hud.toast(
-        "NO CASE KEY"
-      );
-
-      return;
-    }
-
-
-    hud.toast(
-      `${result.rarity.toUpperCase()} — ${result.item}`
-    );
-
-
-    saveSystem.save();
-  };
-
-
-/* =========================================================
-   GAME UPDATE
-   ========================================================= */
-
-const clock =
-  new THREE.Clock();
-
-
-function update(dt) {
-
-  if (!running) {
-    return;
-  }
-
-
-  /* PLAYER */
-
-  player.update(
-    dt,
-    input
-  );
-
-
-  /* WEAPON */
-
-  weapon.update(
-    dt
-  );
-
-
-  /* FIRE */
-
-  if (
-    input.mouse.down
-  ) {
-
-    const fired =
-      weapon.fire();
-
-    if (fired) {
-      statistics.shot();
-    }
-  }
-
-
-  /* RELOAD */
-
-  if (
-    input.reload
-  ) {
-
-    weapon.reload();
-
-    input.reload = false;
-  }
-
-
-  /* AI */
-
-  ai.update(
-    dt
-  );
-
-
-  /* SURVIVAL WAVES */
-
-  enemySpawner?.update(
-    dt
-  );
-
-
-  /* PARTICLES */
-
-  particles.update(
-    dt
-  );
-
-
-  /* OBJECTIVES */
-
-  objectives?.update(
-    dt
-  );
-
-
-  /* MISSION */
-
-  mission?.update(
-    dt
-  );
-
-
-  /* HOSTAGE */
-
-  if (
-    currentMissionType ===
-      "hostage" &&
-    hostage
-  ) {
-
-    const distance =
-      camera.position.distanceTo(
-        hostage.position
-      );
-
-
-    if (
-      distance < 3
-    ) {
-
-      objectives?.hostageSecured();
-
-      hostage.children[0]
-        .material.color
-        .setHex(
-          0x55ff88
-        );
-
-
-      $("objective").textContent =
-        "HOSTAGE SECURED — MOVE TO EXTRACTION";
-    }
-  }
-
-
-  /* EXTRACTION */
-
-  if (
-    objectives?.extractionActive
-  ) {
-
-    const point =
-      objectives.extractionPosition ||
-      getExtractionPoint();
-
-
-    extraction.create(
-      point
-    );
-
-
-    const distance =
-      camera.position.distanceTo(
-        point
-      );
-
-
-    if (
-      distance < 4
-    ) {
-
-      objectives.complete =
-        true;
-    }
-  }
-
-
-  /* SURVIVAL */
-
-  if (
-    currentMissionType ===
-    "survival"
-  ) {
-
-    const remaining =
-      Math.max(
-        0,
-        Math.ceil(
-          60 -
-          mission.time
-        )
-      );
-
-
-    if (
-      objectives?.extractionActive
-    ) {
-
-      $("objective").textContent =
-        "EXTRACTION ACTIVE — REACH THE ZONE";
-
-    } else {
-
-      $("objective").textContent =
-        `SURVIVE — ${remaining} SECONDS`;
-    }
-  }
-
-
-  /* TDM */
-
-  if (
-    currentMissionType ===
-    "tdm"
-  ) {
-
-    $("objective").textContent =
-      `ELIMINATE HOSTILES — ${
-        objectives?.kills ||
-        mission.progress
-      }/18`;
-  }
-
-
-  /* HVT */
-
-  if (
-    currentMissionType ===
-    "hvt"
-  ) {
-
-    if (
-      objectives?.extractionActive
-    ) {
-
-      $("objective").textContent =
-        "TARGET NEUTRALIZED — MOVE TO EXTRACTION";
-
-    } else {
-
-      $("objective").textContent =
-        "ELIMINATE HIGH VALUE TARGET";
-    }
-  }
-
-
-  /* HOSTAGE */
-
-  if (
-    currentMissionType ===
-    "hostage" &&
-    objectives?.extractionActive
-  ) {
-
-    $("objective").textContent =
-      "HOSTAGE SECURED — MOVE TO EXTRACTION";
-  }
-
-
-  /* SUCCESS */
-
-  if (
-    objectives?.complete ||
-    mission?.complete
-  ) {
-
-    completeMission();
-
-    return;
-  }
-
-
-  /* PLAYER DEAD */
-
-  if (
-    player.dead
-  ) {
-
-    failMission();
-
-    return;
-  }
-
-
-  /* HUD */
-
-  hud.update(
-    player,
-    weapon,
-    $("objective")
-      .textContent
-  );
-
-
-  $("score").textContent =
-    player.score;
-
-  $("level").textContent =
-    player.level;
-
-  $("xp-value").textContent =
-    player.xp;
-}
-
-
-/* =========================================================
-   RENDER LOOP
-   ========================================================= */
-
-function animate() {
-
-  requestAnimationFrame(
-    animate
-  );
-
-
-  const dt =
-    Math.min(
-      clock.getDelta(),
-      0.05
-    );
-
-
-  update(dt);
-
-
-  renderer.render(
-    scene,
-    camera
-  );
-}
-
-animate();
 
 
 /* =========================================================
@@ -1451,93 +500,130 @@ window.addEventListener(
   "resize",
   () => {
 
+    const width =
+      window.innerWidth;
+
+    const height =
+      window.innerHeight;
+
+
     camera.aspect =
-      innerWidth /
-      innerHeight;
+      width / height;
 
     camera.updateProjectionMatrix();
 
 
     renderer.setSize(
-      innerWidth,
-      innerHeight
+      width,
+      height
     );
+
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio || 1,
+        2
+      )
+    );
+
   }
 );
 
 
 /* =========================================================
-   CALLSIGN
+   VISIBILITY
    ========================================================= */
 
-const savedCallsign =
-  localStorage.getItem(
-    "lastline_callsign"
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (!running) {
+      return;
+    }
+
+
+    if (document.hidden) {
+
+      if (
+        typeof core.pause ===
+        "function"
+      ) {
+
+        core.pause();
+
+      }
+
+    } else {
+
+      if (
+        typeof core.resume ===
+        "function"
+      ) {
+
+        core.resume();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   GAME LOOP
+   ========================================================= */
+
+let lastTime =
+  performance.now();
+
+
+function gameLoop(
+  currentTime
+) {
+
+  const elapsed =
+    currentTime -
+    lastTime;
+
+
+  lastTime =
+    currentTime;
+
+
+  const deltaTime =
+    Math.min(
+      elapsed / 1000,
+      0.05
+    );
+
+
+  if (
+    typeof core.update ===
+    "function"
+  ) {
+
+    core.update(
+      deltaTime
+    );
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
   );
 
 
-if (
-  savedCallsign &&
-  callsignInput
-) {
+  requestAnimationFrame(
+    gameLoop
+  );
 
-  callsignInput.value =
-    savedCallsign;
 }
 
 
-callsignInput?.addEventListener(
-  "change",
-  () => {
-
-    const value =
-      callsignInput.value
-        .trim()
-        .toUpperCase();
-
-    if (value) {
-
-      localStorage.setItem(
-        "lastline_callsign",
-        value
-      );
-    }
-  }
-);
-
-
-/* =========================================================
-   INITIAL STATE
-   ========================================================= */
-
-hud.hide();
-
-$("missionName").textContent =
-  "READY";
-
-$("objective").textContent =
-  "SELECT AN OPERATION";
-
-
-/* =========================================================
-   DEBUG ACCESS
-   ========================================================= */
-
-window.LastLine = {
-  scene,
-  camera,
-  player,
-  world,
-  enemies,
-  weapon,
-  mission,
-  progression,
-  caseSystem,
-  objectives,
-  statistics
-};
-
-
-console.log(
-  "LAST LINE READY"
+requestAnimationFrame(
+  gameLoop
 );
