@@ -1,5 +1,6 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-import { Weapon } from "./Weapon.js";
+import { Carbine } from "./Carbine.js";
+import { SMG } from "./SMG.js";
+import { DMR } from "./DMR.js";
 
 export class WeaponManager {
   constructor(scene, camera) {
@@ -24,46 +25,12 @@ export class WeaponManager {
 
   createWeapons() {
     this.weapons = [
-      new Weapon({
-        name: "CARBINE",
-        damage: 28,
-        fireRate: 8,
-        magazineSize: 30,
-        reserveAmmo: 150,
-        reloadTime: 1.7,
-        range: 120,
-        spread: 0.012,
-        automatic: true
-      }),
-
-      new Weapon({
-        name: "SMG",
-        damage: 19,
-        fireRate: 13,
-        magazineSize: 40,
-        reserveAmmo: 200,
-        reloadTime: 1.9,
-        range: 75,
-        spread: 0.025,
-        automatic: true
-      }),
-
-      new Weapon({
-        name: "DMR",
-        damage: 55,
-        fireRate: 2.2,
-        magazineSize: 12,
-        reserveAmmo: 72,
-        reloadTime: 2.1,
-        range: 180,
-        spread: 0.004,
-        automatic: false
-      })
+      new Carbine(),
+      new SMG(),
+      new DMR()
     ];
 
-    for (
-      const weapon of this.weapons
-    ) {
+    for (const weapon of this.weapons) {
       weapon.setup(
         this.scene,
         this.camera
@@ -75,10 +42,7 @@ export class WeaponManager {
   // UPDATE
   // =========================================
 
-  update(
-    dt,
-    input = {}
-  ) {
+  update(dt, input = {}) {
     const weapon =
       this.getActiveWeapon();
 
@@ -88,9 +52,7 @@ export class WeaponManager {
 
     weapon.update(dt);
 
-    /*
-     * Weapon switching.
-     */
+    // Weapon switching
     if (
       input.weapon !== null &&
       input.weapon !== undefined
@@ -100,25 +62,19 @@ export class WeaponManager {
       );
     }
 
-    /*
-     * Reload.
-     */
+    // Reload
     if (input.reload) {
       this.reload();
     }
 
-    /*
-     * Shooting.
-     */
-    if (
-      input.shooting
-    ) {
+    // Shooting
+    if (input.shooting) {
       this.shoot();
     }
   }
 
   // =========================================
-  // EQUIP
+  // EQUIP WEAPON
   // =========================================
 
   equipWeapon(index) {
@@ -126,14 +82,6 @@ export class WeaponManager {
       index < 0 ||
       index >= this.weapons.length
     ) {
-      return;
-    }
-
-    if (
-      index === this.activeIndex &&
-      this.weapons.length > 0
-    ) {
-      this.updateVisibility();
       return;
     }
 
@@ -145,8 +93,7 @@ export class WeaponManager {
         false;
     }
 
-    this.activeIndex =
-      index;
+    this.activeIndex = index;
 
     const newWeapon =
       this.getActiveWeapon();
@@ -169,10 +116,9 @@ export class WeaponManager {
       i < this.weapons.length;
       i++
     ) {
-      const weapon =
-        this.weapons[i];
-
-      weapon.weaponObject.visible =
+      this.weapons[i]
+        .weaponObject
+        .visible =
         i === this.activeIndex;
     }
   }
@@ -232,21 +178,15 @@ export class WeaponManager {
     }
 
     if (
-      !this.targets.includes(
-        target
-      )
+      !this.targets.includes(target)
     ) {
-      this.targets.push(
-        target
-      );
+      this.targets.push(target);
     }
   }
 
   removeTarget(target) {
     const index =
-      this.targets.indexOf(
-        target
-      );
+      this.targets.indexOf(target);
 
     if (index !== -1) {
       this.targets.splice(
@@ -347,9 +287,7 @@ export class WeaponManager {
   // =========================================
 
   reset() {
-    for (
-      const weapon of this.weapons
-    ) {
+    for (const weapon of this.weapons) {
       weapon.reset();
     }
 
@@ -365,14 +303,11 @@ export class WeaponManager {
   // =========================================
 
   destroy() {
-    for (
-      const weapon of this.weapons
-    ) {
+    for (const weapon of this.weapons) {
       weapon.destroy();
     }
 
     this.weapons = [];
-
     this.targets = [];
 
     this.lastShotResult = null;
